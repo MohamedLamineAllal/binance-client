@@ -1,4 +1,16 @@
-# binance-api-node [![build](https://img.shields.io/travis/HyperCubeProject/binance-api-node.svg?style=flat-square)](https://travis-ci.org/HyperCubeProject/binance-api-node) [![cover](https://img.shields.io/coveralls/HyperCubeProject/binance-api-node.svg?style=flat-square)](https://coveralls.io/github/HyperCubeProject/binance-api-node) [![bnb](https://img.shields.io/badge/binance-winner-yellow.svg?style=flat-square)](https://github.com/binance-exchange/binance-api-node)
+# binance-api-node (Fork) [![build](https://img.shields.io/travis/HyperCubeProject/binance-api-node.svg?style=flat-square)](https://travis-ci.org/HyperCubeProject/binance-api-node) [![cover](https://img.shields.io/coveralls/HyperCubeProject/binance-api-node.svg?style=flat-square)](https://coveralls.io/github/HyperCubeProject/binance-api-node) [![bnb](https://img.shields.io/badge/binance-winner-yellow.svg?style=flat-square)](https://github.com/binance-exchange/binance-api-node)
+
+
+# Note about being a fork
+This is a fork of the original work. This fork package hold a lot of fix of many problems and errors. Mainly in the typescript declaration. And in the trade stream payload (the original strip a lot of information, and have wrong tradeId data). We are depending mainly on that package in our work. So we will be maintaining the project to suite our need.
+
+I sent PR before and it wasn't merged. I resent the last change too. And i hope they will be accepted.
+
+I will be maintaining this fork.
+
+> Note: the doc also is updated to reflect the change. 
+
+# DOC
 
 > A complete API wrapper for the [Binance](https://binance.com) API.
 
