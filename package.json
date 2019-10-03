@@ -6,10 +6,10 @@
   "files": ["dist", "index.d.ts"],
   "scripts": {
     "build": "rimraf dist && babel src -d dist",
-    "prepare": "yarn build",
+    "prepare": "npm run build",
     "test": "ava --timeout=10s",
     "cover": "nyc ava",
-    "report": "yarn cover && nyc report --reporter=text-lcov | coveralls",
+    "report": "npm run cover && nyc report --reporter=text-lcov | coveralls",
     "lint": "eslint src"
   },
   "dependencies": {
