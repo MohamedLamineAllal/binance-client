@@ -23,12 +23,12 @@ and new AggTrades
 
 The inconsistency is dangerous
 ![alt text](https://i.imgur.com/RaCU4kp.png)
-Wrong id !
+Wrong id !  (the one of the right is from the official API doc)
 
 All fixed! 
 
 
-
+  
 
 # DOC
 
