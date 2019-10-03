@@ -1,9 +1,9 @@
-# binance-api
+# binance-client
 
 # Note about being a fork
-This is a fork of binance-api-node. This fork package hold a lot of fixes of many problems and errors. Mainly in the trade stream payload (the original strip a lot of information, and have wrong tradeId data). And the typescript declarations. And We are depending mainly on that package in our work. So we will be maintaining the project to suite our need.
+This is a fork of binance-client-node. This fork package hold a lot of fixes of many problems and errors. Mainly in the trade stream payload (the original strip a lot of information, and have wrong tradeId data). And also problems in the typescript declarations. And We are depending mainly on that package in our work. So we will be maintaining the project to suite our need.
 
-I sent PR before and it wasn't merged. I resent the last changes too. And i hope they will be accepted.
+I sent a PR before and it wasn't merged. I resent the last changes too. And i hope they will be accepted.
 
 I will be maintaining this fork.
 
@@ -13,16 +13,28 @@ I will be maintaining this fork.
 
 The doc need some updates (parts from the original) [i'll be updating them progressively]
 
+![alt text](https://i.imgur.com/5sEk5Ls.png) 
+------>
+![alt text](https://i.imgur.com/yxwA9Zq.png)
+
+https://i.imgur.com/kv4MykW.png
+
+
+
+
 
 # DOC
 
 > A complete API wrapper for the [Binance](https://binance.com) API.
 
+> this project support typescript too.
+
+
 ### Installation
 
-    npm install binance-api --save
+    npm install binance-client --save
   or
-    yarn add binance-api
+    yarn add binance-client
 
 ### Getting started
 
@@ -31,7 +43,7 @@ you don't plan on doing authenticated calls. You can create an api key
 [here](https://www.binance.com/userCenter/createApi.html).
 
 ```js
-import Binance from 'binance-api'
+import Binance from 'binance-client'
 
 const client = Binance()
 
@@ -48,7 +60,7 @@ client.time().then(time => console.log(time))
 If you do not have an appropriate babel config, you will need to use the basic commonjs requires.
 
 ```js
-const Binance = require('binance-api').default
+const Binance = require('binance-client').default
 ```
 
 Every REST method returns a Promise, making this library [async await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) ready.
@@ -286,9 +298,9 @@ Note: If `frondId`, `startTime`, and `endTime` are not sent, the most recent agg
   quantity: '1.31000000',
   firstId: 2215345,
   lastId: 2215345,
-  timestamp: 1508478599481,
+  time: 1508478599481,
   isBuyerMaker: true,
-  wasBestPrice: true
+  isBestMatch: true
 }]
 ```
 
@@ -1124,13 +1136,18 @@ client.ws.trades(['ETHBTC', 'BNBBTC'], trade => {
 ```js
 {
   eventType: 'trade',
-  eventTime: 1508614495052,
-  symbol: 'ETHBTC',
-  price: '0.04923600',
-  quantity: '3.43500000',
-  maker: false,
-  tradeId: 2148226
+  eventTime: 1570085814247,
+  symbol: 'BTCUSDT',
+  tradeId: 185788284,
+  price: '8270.00000000',
+  quantity: '0.05862300',
+  buyerOrderId: 682332684,
+  sellerOrderId: 682341941,
+  tradeTime: 1570085814244,
+  isBuyerMaker: true,
+  isBestMatch: true
 }
+
 ```
 
 </details>
@@ -1151,12 +1168,16 @@ client.ws.aggTrades(['ETHBTC', 'BNBBTC'], trade => {
 ```js
 {
   eventType: 'aggTrade',
-  eventTime: 1508614495052,
-  symbol: 'ETHBTC',
-  price: '0.04923600',
-  quantity: '3.43500000',
-  maker: false,
-  tradeId: 2148226
+  eventTime: 1570085637532,
+  symbol: 'BTCUSDT',
+  aggId: 167929650,
+  price: '8283.38000000',
+  quantity: '0.15655200',
+  firstTradeId: 185787780,
+  lastTradeId: 185787780,
+  tradeTime: 1570085637527,
+  isBuyerMaker: true,
+  isBestMatch: true
 }
 ```
 
@@ -1199,7 +1220,7 @@ An utility error code map is also being exported by the package in order for you
 conditionals upon specific errors that could occur while using the API.
 
 ```js
-import Binance, { ErrorCodes } from 'binance-api'
+import Binance, { ErrorCodes } from 'binance-client'
 
 console.log(ErrorCodes.INVALID_ORDER_TYPE) // -1116
 ```
