@@ -16,9 +16,14 @@ The doc need some updates (parts from the original) [i'll be updating them progr
 ![alt text](https://i.imgur.com/5sEk5Ls.png) 
 ------>
 ![alt text](https://i.imgur.com/yxwA9Zq.png)
+and new AggTrades
+![alt text](https://i.imgur.com/kv4MykW.png)
 
-https://i.imgur.com/kv4MykW.png
+The inconsistency is dangerous
+![alt text](https://i.imgur.com/RaCU4kp.png)
+Wrong id !
 
+All fixed! 
 
 
 
