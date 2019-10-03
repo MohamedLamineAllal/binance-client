@@ -1,27 +1,28 @@
-# binance-api-node (Fork) [![build](https://img.shields.io/travis/HyperCubeProject/binance-api-node.svg?style=flat-square)](https://travis-ci.org/HyperCubeProject/binance-api-node) [![cover](https://img.shields.io/coveralls/HyperCubeProject/binance-api-node.svg?style=flat-square)](https://coveralls.io/github/HyperCubeProject/binance-api-node) [![bnb](https://img.shields.io/badge/binance-winner-yellow.svg?style=flat-square)](https://github.com/binance-exchange/binance-api-node)
-
+# binance-api
 
 # Note about being a fork
-This is a fork of the original work. This fork package hold a lot of fix of many problems and errors. Mainly in the typescript declaration. And in the trade stream payload (the original strip a lot of information, and have wrong tradeId data). We are depending mainly on that package in our work. So we will be maintaining the project to suite our need.
+This is a fork of binance-api-node. This fork package hold a lot of fixes of many problems and errors. Mainly in the trade stream payload (the original strip a lot of information, and have wrong tradeId data). And the typescript declarations. And We are depending mainly on that package in our work. So we will be maintaining the project to suite our need.
 
-I sent PR before and it wasn't merged. I resent the last change too. And i hope they will be accepted.
+I sent PR before and it wasn't merged. I resent the last changes too. And i hope they will be accepted.
 
 I will be maintaining this fork.
 
-> Note: the doc also is updated to reflect the change. 
+> Note: the doc also is updated to reflect the changes.
+
+> You can expect too more responding (specially to review and accept PR)
+
+The doc need some updates (parts from the original) [i'll be updating them progressively]
+
 
 # DOC
 
 > A complete API wrapper for the [Binance](https://binance.com) API.
 
-Note: This wrapper uses Promises, if they are not supported in your environment, you might
-want to add [a polyfill](https://github.com/stefanpenner/es6-promise) for them.
-
-For PRs or issues, head over to the [source repository](https://github.com/HyperCubeProject/binance-api-node).
-
 ### Installation
 
-    yarn add binance-api-node
+    npm install binance-api --save
+  or
+    yarn add binance-api
 
 ### Getting started
 
@@ -30,7 +31,7 @@ you don't plan on doing authenticated calls. You can create an api key
 [here](https://www.binance.com/userCenter/createApi.html).
 
 ```js
-import Binance from 'binance-api-node'
+import Binance from 'binance-api'
 
 const client = Binance()
 
@@ -47,7 +48,7 @@ client.time().then(time => console.log(time))
 If you do not have an appropriate babel config, you will need to use the basic commonjs requires.
 
 ```js
-const Binance = require('binance-api-node').default
+const Binance = require('binance-api').default
 ```
 
 Every REST method returns a Promise, making this library [async await](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/async_function) ready.
@@ -1198,7 +1199,7 @@ An utility error code map is also being exported by the package in order for you
 conditionals upon specific errors that could occur while using the API.
 
 ```js
-import Binance, { ErrorCodes } from 'binance-api-node'
+import Binance, { ErrorCodes } from 'binance-api'
 
 console.log(ErrorCodes.INVALID_ORDER_TYPE) // -1116
 ```
