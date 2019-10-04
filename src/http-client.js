@@ -13,6 +13,7 @@ const defaultGetTime = () => Date.now()
 const makeQueryString = q =>
   q
     ? `?${Object.keys(q)
+        .filter(k => !!q[k])
         .map(k => `${encodeURIComponent(k)}=${encodeURIComponent(q[k])}`)
         .join('&')}`
     : ''
