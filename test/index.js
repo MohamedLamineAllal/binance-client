@@ -245,7 +245,7 @@ test('[WS] trades', t => {
 test('[WS] aggregate trades', t => {
   return new Promise(resolve => {
     client.ws.aggTrades(['BNBBTC', 'ETHBTC', 'BNTBTC'], trade => {
-      checkFields(t, trade, ['eventType', 'tradeId', 'quantity', 'price', 'symbol'])
+      checkFields(t, trade, ['eventType', 'aggId', 'quantity', 'price', 'symbol'])
       resolve()
     })
   })

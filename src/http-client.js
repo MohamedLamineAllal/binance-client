@@ -249,21 +249,12 @@ export default opts => {
     aggTrades: payload => aggTrades(pubCall, payload),
     candles: payload => candles(pubCall, payload),
 
-    trades: async (payload) =>
-      renameProps(
-        await checkParams('trades', payload, ['symbol']) && pubCall('/v1/trades', payload),
-        {
-          qty: 'quantity'
-        }
-      ),
-    tradesHistory: async (payload) =>
-      renameProps(
-        await checkParams('tradesHitory', payload, ['symbol']) && kCall('/v1/historicalTrades', payload),
-        {
-          qty: 'quantity'
-        }
-      ),
-
+    trades: (payload) => checkParams('trades', payload, ['symbol']) && pubCall('/v1/trades', payload).then(
+      trades => renameProps(trades, { qty: 'quantity'})
+    ),
+    tradesHistory: (payload) => checkParams('tradesHitory', payload, ['symbol']) && kCall('/v1/historicalTrades', payload).then(
+      trades => renameProps(trades, { qty: 'quantity'})
+    ),
     dailyStats: payload => pubCall('/v1/ticker/24hr', payload),
     prices: () =>
       pubCall('/v1/ticker/allPrices').then(r =>
@@ -276,7 +267,6 @@ export default opts => {
       pubCall('/v1/ticker/allBookTickers').then(r =>
         r.reduce((out, cur) => ((out[cur.symbol] = cur), out), {}),
       ),
-
     order: payload => order(privCall, payload, '/v3/order'),
     orderTest: payload => order(privCall, payload, '/v3/order/test'),
     getOrder: payload => privCall('/v3/order', payload),
@@ -286,12 +276,7 @@ export default opts => {
     allOrders: payload => privCall('/v3/allOrders', payload),
 
     accountInfo: payload => privCall('/v3/account', payload),
-    myTrades: async (payload) => renameProps(
-      await privCall('/v3/myTrades', payload),
-      {
-        qty: 'quantity'
-      }
-    ),
+    myTrades:  (payload) => privCall('/v3/myTrades', payload),
     withdraw: payload => privCall('/wapi/v3/withdraw.html', payload, 'POST'),
     withdrawHistory: payload => privCall('/wapi/v3/withdrawHistory.html', payload),
     depositHistory: payload => privCall('/wapi/v3/depositHistory.html', payload),
