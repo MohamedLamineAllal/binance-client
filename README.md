@@ -1,9 +1,9 @@
 # binance-client
 
 # Note about being a fork
-This is a fork of binance-client-node. This fork package hold a lot of fixes of many problems and errors. Mainly in the trade stream payload (the original strip a lot of information, and have wrong tradeId data). And also problems in the typescript declarations. And We are depending mainly on that package in our work. So we will be maintaining the project to suite our need.
+This is a fork of binance-client-node. This fork package hold a lot of fixes of many problems and errors. Mainly in the trade stream payload (the original strip a lot of information, and have wrong tradeId data). And also problems in the typescript declarations. And We are depending mainly on that package in our work. So we will be maintaining the project to suite our need. 
 
-I sent a PR before and it wasn't merged. I resent the last changes too. And i hope they will be accepted.
+The process of sending PR to the original work and and getting handled is so slow. And then there is many problems with the original package. And i'm making many important changes. 
 
 I will be maintaining this fork.
 
@@ -27,6 +27,7 @@ Wrong id !  (the one of the right is from the official API doc)
 
 All fixed! 
 
+More work is taken to make everything consistent and up to date with the official API.
 
   
 
@@ -1132,7 +1133,7 @@ client.ws.candles('ETHBTC', '1m', candle => {
 Live trade data feed. Pass either a single symbol string or an array of symbols. The trade streams push raw trade information; each trade has a unique buyer and seller.
 
 ```js
-client.ws.trades(['ETHBTC', 'BNBBTC'], trade => {
+client.ws.trades(['BTCUSDT', 'ETHBTC'], trade => {
   console.log(trade)
 })
 ```
@@ -1141,19 +1142,34 @@ client.ws.trades(['ETHBTC', 'BNBBTC'], trade => {
 <summary>Output</summary>
 
 ```js
+......
 {
   eventType: 'trade',
-  eventTime: 1570085814247,
+  eventTime: 1570196993155,
+  symbol: 'ETHBTC',
+  tradeId: 145470107,
+  price: '0.02142700',
+  quantity: '0.06300000',
+  buyerOrderId: 498249081,
+  sellerOrderId: 498249078,
+  tradeTime: 1570196993151,
+  isBuyerMaker: false,
+  isBestMatch: true
+}
+{
+  eventType: 'trade',
+  eventTime: 1570196993376,
   symbol: 'BTCUSDT',
-  tradeId: 185788284,
-  price: '8270.00000000',
-  quantity: '0.05862300',
-  buyerOrderId: 682332684,
-  sellerOrderId: 682341941,
-  tradeTime: 1570085814244,
+  tradeId: 186166622,
+  price: '8138.30000000',
+  quantity: '0.01722700',
+  buyerOrderId: 684614964,
+  sellerOrderId: 684614991,
+  tradeTime: 1570196993372,
   isBuyerMaker: true,
   isBestMatch: true
 }
+.....
 
 ```
 
@@ -1164,7 +1180,7 @@ client.ws.trades(['ETHBTC', 'BNBBTC'], trade => {
 Live trade data feed. Pass either a single symbol string or an array of symbols. The aggregate trade streams push trade information that is aggregated for a single taker order.
 
 ```js
-client.ws.aggTrades(['ETHBTC', 'BNBBTC'], trade => {
+client.ws.aggTrades(['BTCUSDT', 'ETHBTC'], trade => {
   console.log(trade)
 })
 ```
@@ -1173,19 +1189,34 @@ client.ws.aggTrades(['ETHBTC', 'BNBBTC'], trade => {
 <summary>Output</summary>
 
 ```js
+.....
 {
   eventType: 'aggTrade',
-  eventTime: 1570085637532,
-  symbol: 'BTCUSDT',
-  aggId: 167929650,
-  price: '8283.38000000',
-  quantity: '0.15655200',
-  firstTradeId: 185787780,
-  lastTradeId: 185787780,
-  tradeTime: 1570085637527,
+  eventTime: 1570197286258,
+  symbol: 'ETHBTC',
+  aggId: 132178432,
+  price: '0.02144000',
+  quantity: '0.42500000',
+  firstTradeId: 145470333,
+  lastTradeId: 145470333,
+  tradeTime: 1570197286254,
   isBuyerMaker: true,
   isBestMatch: true
 }
+{
+  eventType: 'aggTrade',
+  eventTime: 1570197286697,
+  symbol: 'BTCUSDT',
+  aggId: 168291934,
+  price: '8160.04000000',
+  quantity: '0.40000000',
+  firstTradeId: 186167448,
+  lastTradeId: 186167448,
+  tradeTime: 1570197286693,
+  isBuyerMaker: true,
+  isBestMatch: true
+}
+....
 ```
 
 </details>

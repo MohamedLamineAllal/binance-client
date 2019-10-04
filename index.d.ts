@@ -196,15 +196,17 @@ declare module 'binance-client' {
     }
 
     export interface WebSocket {
-        depth: (pair: string | string[], callback: (depth: Depth) => void) => Function;
-        partialDepth: (options: { symbol: string, level: number } | { symbol: string, level: number }[], callback: (depth: PartialDepth) => void) => Function;
-        ticker: (pair: string | string[], callback: (ticker: Ticker) => void) => Function;
-        allTickers: (callback: (tickers: Ticker[]) => void) => Function;
-        candles: (pair: string | string[], period: string, callback: (ticker: Candle) => void) => Function;
-        trades: (pairs: string | string[], callback: (trade: WsTrade) => void) => Function;
-        aggTrades: (pairs: string | string[], callback: (trade: WsAggregatedTrade) => void) => Function;
-        user: (callback: (msg: OutboundAccountInfo | ExecutionReport) => void) => Function;
+        depth: (pair: string | string[], callback: (depth: Depth) => void) => ReconnectingWebSocketHandler;
+        partialDepth: (options: { symbol: string, level: number } | { symbol: string, level: number }[], callback: (depth: PartialDepth) => void) => ReconnectingWebSocketHandler;
+        ticker: (pair: string | string[], callback: (ticker: Ticker) => void) => ReconnectingWebSocketHandler;
+        allTickers: (callback: (tickers: Ticker[]) => void) => ReconnectingWebSocketHandler;
+        candles: (pair: string | string[], period: string, callback: (ticker: Candle) => void) => ReconnectingWebSocketHandler;
+        trades: (pairs: string | string[], callback: (trade: WsTrade) => void) => ReconnectingWebSocketHandler;
+        aggTrades: (pairs: string | string[], callback: (trade: WsAggregatedTrade) => void) => ReconnectingWebSocketHandler;
+        user: (callback: (msg: OutboundAccountInfo | ExecutionReport) => void) => ReconnectingWebSocketHandler;
     }
+
+    export type ReconnectingWebSocketHandler = (options?: {keepClosed: boolean, fastClose: boolean, delay: number}) => void
 
     export type CandleChartInterval =
         | '1m'
