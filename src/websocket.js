@@ -170,7 +170,6 @@ const tradesInternal = (payload, streamName, outputMap, cb) => {
   const cache = (Array.isArray(payload) ? payload : [payload]).map(symbol => {
     const w = openWebSocket(`${BASE}/${symbol.toLowerCase()}@${streamName}`)
     w.onmessage = msg => {
-      console.log(outputMap(JSON.parse(msg.data)));
       cb(outputMap(JSON.parse(msg.data)))
     }
 
