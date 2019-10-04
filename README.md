@@ -305,7 +305,7 @@ Note: If `frondId`, `startTime`, and `endTime` are not sent, the most recent agg
 [{
   aggId: 2107132,
   price: '0.05390400',
-  qty: '1.31000000',
+  quantity: '1.31000000',
   firstId: 2215345,
   lastId: 2215345,
   time: 1508478599481,
@@ -482,7 +482,7 @@ Creates a new order.
 console.log(await client.order({
   symbol: 'XLMETH',
   side: 'BUY',
-  qty: 100,
+  quantity: 100,
   price: 0.0002,
 }))
 ```
@@ -761,7 +761,7 @@ console.log(await client.myTrades({
   id: 9960,
   orderId: 191939,
   price: '0.00138000',
-  qty: '10.00000000',
+  quantity: '10.00000000',
   commission: '0.00001380',
   commissionAsset: 'ETH',
   time: 1508611114735,

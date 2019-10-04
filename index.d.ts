@@ -79,7 +79,7 @@ declare module 'binance-client' {
     interface Trade {
         id: number,
         price: string,
-        qty: string,
+        quantity: string,
         quoteQty: string,
         time: number,
         isBuyerMaker: boolean,
@@ -173,7 +173,7 @@ declare module 'binance-client' {
         prices(): Promise<{ [index: string]: string }>;
         avgPrice(options?: { symbol: string }): Promise<AvgPriceResult | AvgPriceResult[]>;
         time(): Promise<number>;
-        trades(options: { symbol: string, limit?: number }): Promise<TradeResult[]>;
+        trades(options: { symbol: string, limit?: number }): Promise<Trade[]>;
         ws: WebSocket;
         myTrades(options: { symbol: string, limit?: number, fromId?: number, useServerTime?: boolean }): Promise<MyTrade[]>;
         getOrder(options: { symbol: string, orderId: number, origClientOrderId?: string, recvWindow?: number, useServerTime?: boolean }): Promise<QueryOrderResult>;
@@ -348,7 +348,7 @@ declare module 'binance-client' {
 
     interface OrderFill {
         price: string;
-        qty: string;
+        quantity: string;
         commission: string;
         commissionAsset: string;
     }
@@ -501,7 +501,7 @@ declare module 'binance-client' {
         canTrade: boolean;
         canWithdraw: boolean;
         canDeposit: boolean;
-        lastAccountUpdate: number;
+        lastAccountUpdate: number;ExecutionReport
     }
 
     interface ExecutionReport extends Message {
@@ -533,7 +533,7 @@ declare module 'binance-client' {
     export interface TradeResult {
         id: number;
         price: string;
-        qty: string;
+        quantity: string;
         time: number;
         isBuyerMaker: boolean;
         isBestMatch: boolean;
@@ -546,7 +546,7 @@ declare module 'binance-client' {
         orderId: number;
         orderListId: number;
         price: string;
-        qty: string;
+        quantity: string;
         quoteQty: string;
         commission: string;
         commissionAsset: string;

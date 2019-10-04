@@ -150,6 +150,25 @@ const privateCall = ({ apiKey, apiSecret, base, getTime = defaultGetTime, pubCal
   })
 }
 
+const renameProps = (elements, mapping) => {
+  if (!Array.isArray(elements)) {
+    return renameObjProp(elements, mapping);
+  }
+
+  return elements.map(el => renameObjProp(el, mapping));
+}
+
+const renameObjProp = (el, mapping) => {
+  return Object.keys(el).reduce((newEl, prop) => {
+    if (mapping[prop]) {
+      newEl[mapping[prop]] = el[prop];
+    } else {
+      newEl[prop] = el[prop]
+    }
+    return newEl;
+  }, {});
+}
+
 export const candleFields = [
   'openTime',
   'open',
@@ -206,7 +225,7 @@ const aggTrades = (pubCall, payload) =>
     trades.map(trade => ({
       aggId: trade.a,
       price: trade.p,
-      qty: trade.q,
+      quantity: trade.q,
       firstId: trade.f,
       lastId: trade.l,
       time: trade.T,
@@ -230,10 +249,20 @@ export default opts => {
     aggTrades: payload => aggTrades(pubCall, payload),
     candles: payload => candles(pubCall, payload),
 
-    trades: payload =>
-      checkParams('trades', payload, ['symbol']) && pubCall('/v1/trades', payload),
-    tradesHistory: payload =>
-      checkParams('tradesHitory', payload, ['symbol']) && kCall('/v1/historicalTrades', payload),
+    trades: async (payload) =>
+      renameProps(
+        await checkParams('trades', payload, ['symbol']) && pubCall('/v1/trades', payload),
+        {
+          qty: 'quantity'
+        }
+      ),
+    tradesHistory: async (payload) =>
+      renameProps(
+        await checkParams('tradesHitory', payload, ['symbol']) && kCall('/v1/historicalTrades', payload),
+        {
+          qty: 'quantity'
+        }
+      ),
 
     dailyStats: payload => pubCall('/v1/ticker/24hr', payload),
     prices: () =>
@@ -257,8 +286,12 @@ export default opts => {
     allOrders: payload => privCall('/v3/allOrders', payload),
 
     accountInfo: payload => privCall('/v3/account', payload),
-    myTrades: payload => privCall('/v3/myTrades', payload),
-
+    myTrades: async (payload) => renameProps(
+      await privCall('/v3/myTrades', payload),
+      {
+        qty: 'quantity'
+      }
+    ),
     withdraw: payload => privCall('/wapi/v3/withdraw.html', payload, 'POST'),
     withdrawHistory: payload => privCall('/wapi/v3/withdrawHistory.html', payload),
     depositHistory: payload => privCall('/wapi/v3/depositHistory.html', payload),
