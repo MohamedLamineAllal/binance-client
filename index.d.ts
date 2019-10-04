@@ -67,8 +67,8 @@ declare module 'binance-client' {
     }
     export interface AggregatedTrade {
         aggId: number;
-        price: number;
-        qty: number;
+        price: string;
+        quantity: string;
         firstId: number;
         lastId: number;
         time: number;
@@ -151,7 +151,7 @@ declare module 'binance-client' {
         success: boolean,
         assetDetail: {
             [asset: string]: {
-                minWithdrawAmount: number;
+                minWithdrawAmount: string;
                 depositStatus: boolean;
                 withdrawFee: number;
                 withdrawStatus: boolean;
@@ -163,14 +163,14 @@ declare module 'binance-client' {
     export interface Binance {
         accountInfo(options?: { useServerTime: boolean }): Promise<Account>;
         tradeFee(): Promise<TradeFeeResult>;
-        aggTrades(options?: { symbol: string, fromId?: number, startTime?: number, endTime?: number, limit?: number }): Promise<AggregatedTrade[]>;
+        aggTrades(options?: { symbol: string, fromId?: string, startTime?: number, endTime?: number, limit?: number }): Promise<AggregatedTrade[]>;
         allBookTickers(): Promise<{ [key: string]: Ticker }>;
         book(options: { symbol: string, limit?: number }): Promise<OrderBook>;
         exchangeInfo(): Promise<ExchangeInfo>;
         order(options: NewOrder): Promise<Order>;
         orderTest(options: NewOrder): Promise<Order>;
         ping(): Promise<boolean>;
-        prices(): Promise<{ [index: string]: number }>;
+        prices(): Promise<{ [index: string]: string }>;
         avgPrice(options?: { symbol: string }): Promise<AvgPriceResult | AvgPriceResult[]>;
         time(): Promise<number>;
         trades(options: { symbol: string, limit?: number }): Promise<TradeResult[]>;
@@ -208,22 +208,23 @@ declare module 'binance-client' {
 
     export type ReconnectingWebSocketHandler = (options?: {keepClosed: boolean, fastClose: boolean, delay: number}) => void
 
-    export type CandleChartInterval =
-        | '1m'
-        | '3m'
-        | '5m'
-        | '15m'
-        | '30m'
-        | '1h'
-        | '2h'
-        | '4h'
-        | '6h'
-        | '8h'
-        | '12h'
-        | '1d'
-        | '3d'
-        | '1w'
-        | '1M';
+    export enum CandleChartInterval {
+        ONE_MINUTE = '1m',
+        THREE_MINUTES = '3m',
+        FIVE_MINUTES = '5m',
+        FIFTEEN_MINUTES = '15m',
+        THIRTY_MINUTES = '30m',
+        ONE_HOUR = '1h',
+        TWO_HOURS = '2h',
+        FOUR_HOURS = '4h',
+        SIX_HOURS = '6h',
+        EIGHT_HOURS = '8h',
+        TWELVE_HOURS = '12h',
+        ONE_DAY = '1d',
+        THREE_DAYS = '3d',
+        ONE_WEEK = '1w',
+        ONE_MONTH = '1M'
+    }
 
     export type RateLimitType =
         | 'REQUEST_WEIGHT'
@@ -260,9 +261,9 @@ declare module 'binance-client' {
 
     export interface SymbolPriceFilter {
         filterType: SymbolFilterType,
-        minPrice: number;
-        maxPrice: number;
-        tickSize: number;
+        minPrice: string;
+        maxPrice: string;
+        tickSize: string;
     }
 
     export interface SymbolPercentPriceFilter {
@@ -274,9 +275,9 @@ declare module 'binance-client' {
 
     export interface SymbolLotSizeFilter {
         filterType: SymbolFilterType,
-        minQty: number;
-        maxQty: number;
-        stepSize: number;
+        minQty: string;
+        maxQty: string;
+        stepSize: string;
     }
 
     export interface SymbolMinNotionalFilter {
@@ -331,13 +332,13 @@ declare module 'binance-client' {
     }
 
     export interface NewOrder {
-        icebergQty?: number;
+        icebergQty?: string;
         newClientOrderId?: string;
-        price?: number;
-        qty: number;
+        price?: string;
+        quantity: string;
         recvWindow?: number;
         side: OrderSide;
-        stopPrice?: number;
+        stopPrice?: string;
         symbol: string;
         timeInForce?: TimeInForce;
         useServerTime?: boolean;
@@ -346,22 +347,22 @@ declare module 'binance-client' {
     }
 
     interface OrderFill {
-        price: number;
-        qty: number;
+        price: string;
+        qty: string;
         commission: string;
         commissionAsset: string;
     }
 
     interface Order {
         clientOrderId: string;
-        executedQty: number;
-        icebergQty?: number;
+        executedQty: string;
+        icebergQty?: string;
         orderId: number;
-        origQty: number;
-        price: number;
+        origQty: string;
+        price: string;
         side: OrderSide;
         status: OrderStatus;
-        stopPrice?: number;
+        stopPrice?: string;
         symbol: string;
         timeInForce: TimeInForce;
         transactTime: number;
@@ -416,8 +417,8 @@ declare module 'binance-client' {
     }
 
     interface BidDepth {
-        price: number;
-        qty: number;
+        price: string;
+        quantity: string;
     }
 
     interface PartialDepth {
@@ -428,29 +429,29 @@ declare module 'binance-client' {
     }
 
     interface Bid {
-        price: number;
-        qty: number;
+        price: string;
+        quantity: string;
     }
 
     interface Ticker {
         eventType: string;
         eventTime: number;
         symbol: string;
-        priceChange: number;
-        priceChangePercent: number;
-        weightedAvg: number;
-        prevDayClose: number;
-        curDayClose: number;
-        closeTradeQuantity: number;
-        bestBid: number;
-        bestBidQnt: number;
-        bestAsk: number;
-        bestAskQnt: number;
-        open: number;
-        high: number;
-        low: number;
-        volume: number;
-        volumeQuote: number;
+        priceChange: string;
+        priceChangePercent: string;
+        weightedAvg: string;
+        prevDayClose: string;
+        curDayClose: string;
+        closeTradeQuantity: string;
+        bestBid: string;
+        bestBidQnt: string;
+        bestAsk: string;
+        bestAskQnt: string;
+        open: string;
+        high: string;
+        low: string;
+        volume: string;
+        volumeQuote: string;
         openTime: number;
         closeTime: number;
         firstTradeId: number;
@@ -466,17 +467,17 @@ declare module 'binance-client' {
         closeTime: number;
         firstTradeId: number;
         lastTradeId: number;
-        open: number;
-        high: number;
-        low: number;
-        close: number;
-        volume: number;
+        open: string;
+        high: string;
+        low: string;
+        close: string;
+        volume: string;
         trades: number;
         interval: string;
         isFinal: boolean;
-        quoteVolume: number;
-        buyVolume: number;
-        quoteBuyVolume: number;
+        quoteVolume: string;
+        buyVolume: string;
+        quoteBuyVolume: string;
     }
 
     interface Message {
@@ -510,18 +511,18 @@ declare module 'binance-client' {
         side: OrderSide;
         orderType: OrderType;
         timeInForce: TimeInForce;
-        qty: number;
-        price: number;
-        numberpe: ExecutionType;
-        stopPrice: number;
-        icebergQuantity: number;
+        quantity: string;
+        price: string;
+        executionType: ExecutionType;
+        stopPrice: string;
+        icebergQuantity: string;
         orderStatus: OrderStatus;
         orderRejectReason: string;
         orderId: number;
         orderTime: number;
-        lastTradeQuantity: number;
-        totalTradeQuantity: number;
-        priceLastTrade: number;
+        lastTradeQuantity: string;
+        totalTradeQuantity: string;
+        priceLastTrade: string;
         commission: string;
         commissionAsset: string;
         tradeId: number;
@@ -531,8 +532,8 @@ declare module 'binance-client' {
 
     export interface TradeResult {
         id: number;
-        price: number;
-        qty: number;
+        price: string;
+        qty: string;
         time: number;
         isBuyerMaker: boolean;
         isBestMatch: boolean;
@@ -543,9 +544,10 @@ declare module 'binance-client' {
     interface MyTrade {
         id: number;
         orderId: number;
-        price: number;
-        qty: number;
-        quoteQty: number;
+        orderListId: number;
+        price: string;
+        qty: string;
+        quoteQty: string;
         commission: string;
         commissionAsset: string;
         time: number;
@@ -556,16 +558,16 @@ declare module 'binance-client' {
 
     interface QueryOrderResult {
         clientOrderId: string;
-        cummulativeQuoteQty: number,
-        executedQty: number;
-        icebergQty: number;
+        cummulativeQuoteQty: string,
+        executedQty: string;
+        icebergQty: string;
         isWorking: boolean;
         orderId: number;
-        origQty: number;
-        price: number;
-        side: numberSide;
+        origQty: string;
+        price: string;
+        side: OrderSide;
         status: OrderStatus;
-        stopPrice: number;
+        stopPrice: string;
         symbol: string;
         time: number;
         timeInForce: TimeInForce;
@@ -582,26 +584,26 @@ declare module 'binance-client' {
 
     export interface AvgPriceResult {
         mins: number;
-        price: number;
-number}
+        price: string;
+    }
 
     export interface DailyStatsResult {
         symbol: string;
-        priceChange: number;
-        priceChangePercent: number;
-        weightedAvgPrice: number;
-        prevClosePrice: number;
-        lastPrice: number;
-        lastQty: number;
-        bidPrice: number;
-        bidQty: number;
-        askPrice: number;
-        askQty: number;
-        openPrice: number;
-        highPrice: number;
-        lowPrice: number;
-        volume: number;
-        quoteVolume: number;
+        priceChange: string;
+        priceChangePercent: string;
+        weightedAvgPrice: string;
+        prevClosePrice: string;
+        lastPrice: string;
+        lastQty: string;
+        bidPrice: string;
+        bidQty: string;
+        askPrice: string;
+        askQty: string;
+        openPrice: string;
+        highPrice: string;
+        lowPrice: string;
+        volume: string;
+        quoteVolume: string;
         openTime: number;
         closeTime: number;
         firstId: number; // First tradeId
@@ -619,44 +621,43 @@ number}
 
     export interface CandleChartResult {
         openTime: number;
-        open: number;
-        high: number;
-        low: number;
-        close: number;
-        volume: number;
+        open: string;
+        high: string;
+        low: string;
+        close: string;
+        volume: string;
         closeTime: number;
-        quoteVolume: number;
+        quoteVolume: string;
         trades: number;
-        baseAssetVolume: number;
-        quoteAssetVolume: number;
+        baseAssetVolume: string;
+        quoteAssetVolume: string;
     }
-}
 
+    interface WsTrade {
+        eventType: string;
+        eventTime: number;
+        symbol: string;
+        tradeId: number;
+        price: string;
+        quantity: string;
+        buyerOrderId: number;
+        sellerOrderId: number;
+        tradeTime: number;
+        isBuyerMaker: boolean;
+        isBestMatch: boolean;
+    }
 
-interface WsTrade {
-    eventType: string;
-    eventTime: number;
-    symbol: string;
-    tradeId: number;
-    price: number;
-    quantity: number;
-    buyerOrderId: number;
-    sellerOrderId: number;
-    tradeTime: number;
-    isBuyerMaker: boolean;
-    isBestMatch: boolean;
-}
-
-interface WsAggregatedTrade {
-    eventType: string;
-    eventTime: number;
-    symbol: string;
-    aggId: number;
-    price: number;
-    quantity: number;
-    firstTradeId: number;
-    lastTradeId: number;
-    tradeTime: number;
-    isBuyerMaker: boolean;
-    isBestMatch: boolean;
+    interface WsAggregatedTrade {
+        eventType: string;
+        eventTime: number;
+        symbol: string;
+        aggId: number;
+        price: string;
+        quantity: string;
+        firstTradeId: number;
+        lastTradeId: number;
+        tradeTime: number;
+        isBuyerMaker: boolean;
+        isBestMatch: boolean;
+    }
 }
