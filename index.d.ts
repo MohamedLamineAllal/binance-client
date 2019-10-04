@@ -151,7 +151,7 @@ declare module 'binance-client' {
         success: boolean,
         assetDetail: {
             [asset: string]: {
-                minWithdrawAmount: string;
+                minWithdrawAmount: number;
                 depositStatus: boolean;
                 withdrawFee: number;
                 withdrawStatus: boolean;
@@ -163,14 +163,14 @@ declare module 'binance-client' {
     export interface Binance {
         accountInfo(options?: { useServerTime: boolean }): Promise<Account>;
         tradeFee(): Promise<TradeFeeResult>;
-        aggTrades(options?: { symbol: string, fromId?: string, startTime?: number, endTime?: number, limit?: number }): Promise<AggregatedTrade[]>;
+        aggTrades(options?: { symbol: string, fromId?: number, startTime?: number, endTime?: number, limit?: number }): Promise<AggregatedTrade[]>;
         allBookTickers(): Promise<{ [key: string]: Ticker }>;
         book(options: { symbol: string, limit?: number }): Promise<OrderBook>;
         exchangeInfo(): Promise<ExchangeInfo>;
         order(options: NewOrder): Promise<Order>;
         orderTest(options: NewOrder): Promise<Order>;
         ping(): Promise<boolean>;
-        prices(): Promise<{ [index: string]: string }>;
+        prices(): Promise<{ [index: string]: number }>;
         avgPrice(options?: { symbol: string }): Promise<AvgPriceResult | AvgPriceResult[]>;
         time(): Promise<number>;
         trades(options: { symbol: string, limit?: number }): Promise<TradeResult[]>;
@@ -260,9 +260,9 @@ declare module 'binance-client' {
 
     export interface SymbolPriceFilter {
         filterType: SymbolFilterType,
-        minPrice: string;
-        maxPrice: string;
-        tickSize: string;
+        minPrice: number;
+        maxPrice: number;
+        tickSize: number;
     }
 
     export interface SymbolPercentPriceFilter {
@@ -274,9 +274,9 @@ declare module 'binance-client' {
 
     export interface SymbolLotSizeFilter {
         filterType: SymbolFilterType,
-        minQty: string;
-        maxQty: string;
-        stepSize: string;
+        minQty: number;
+        maxQty: number;
+        stepSize: number;
     }
 
     export interface SymbolMinNotionalFilter {
@@ -331,13 +331,13 @@ declare module 'binance-client' {
     }
 
     export interface NewOrder {
-        icebergQty?: string;
+        icebergQty?: number;
         newClientOrderId?: string;
         price?: number;
         qty: number;
         recvWindow?: number;
         side: OrderSide;
-        stopPrice?: string;
+        stopPrice?: number;
         symbol: string;
         timeInForce?: TimeInForce;
         useServerTime?: boolean;
@@ -361,7 +361,7 @@ declare module 'binance-client' {
         price: number;
         side: OrderSide;
         status: OrderStatus;
-        stopPrice?: string;
+        stopPrice?: number;
         symbol: string;
         timeInForce: TimeInForce;
         transactTime: number;
@@ -510,7 +510,7 @@ declare module 'binance-client' {
         side: OrderSide;
         orderType: OrderType;
         timeInForce: TimeInForce;
-        qty: string;
+        qty: number;
         price: number;
         numberpe: ExecutionType;
         stopPrice: number;
