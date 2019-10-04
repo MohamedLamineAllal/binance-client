@@ -1,7 +1,7 @@
 # binance-client
 
 # Note about being a fork
-This is a fork of binance-client-node. This fork package hold a lot of fixes of many problems and errors. Mainly in the trade stream payload (the original strip a lot of information, and have wrong tradeId data). And also problems in the typescript declarations. And We are depending mainly on that package in our work. So we will be maintaining the project to suite our need. 
+This is a fork of **binance-api-node**. This fork package hold a lot of fixes of many problems and errors. Mainly in the trade stream payload (the original strip a lot of information, and have wrong tradeId data). And also problems in the typescript declarations. And We are depending mainly on that package in our work. So we will be maintaining the project to suite our need. 
 
 The process of sending PR to the original work and and getting handled is so slow. And then there is many problems with the original package. And i'm making many important changes. 
 
@@ -27,7 +27,9 @@ Wrong id !  (the one of the right is from the official API doc)
 
 All fixed! 
 
-More work is taken to make everything consistent and up to date with the official API.
+More work is taken to make everything consistent and up to date with the official API. It will take a bit of time. As i'm doing that progressively. 
+
+You can help by pointing out the inconsistent data. And i'm open to any suggestions. Fill PR too if you can.
 
   
 
