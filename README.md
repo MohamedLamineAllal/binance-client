@@ -302,7 +302,7 @@ Note: If `frondId`, `startTime`, and `endTime` are not sent, the most recent agg
 [{
   aggId: 2107132,
   price: '0.05390400',
-  quantity: '1.31000000',
+  qty: '1.31000000',
   firstId: 2215345,
   lastId: 2215345,
   time: 1508478599481,
@@ -434,7 +434,7 @@ console.log(await client.prices())
 
 #### allBookTickers
 
-Best price/qty on the order book for all symbols.
+Best price/quantity on the order book for all symbols.
 
 ```js
 console.log(await client.allBookTickers())
@@ -479,7 +479,7 @@ Creates a new order.
 console.log(await client.order({
   symbol: 'XLMETH',
   side: 'BUY',
-  quantity: 100,
+  qty: 100,
   price: 0.0002,
 }))
 ```
@@ -792,7 +792,7 @@ console.log(await client.tradesHistory({ symbol: 'ETHBTC' }))
   {
     "id": 28457,
       "price": "4.00000100",
-      "qty": "12.00000000",
+      "quantity": "12.00000000",
       "time": 1499865549590,
       "isBuyerMaker": true,
       "isBestMatch": true

@@ -206,7 +206,7 @@ const aggTrades = (pubCall, payload) =>
     trades.map(trade => ({
       aggId: trade.a,
       price: trade.p,
-      quantity: trade.q,
+      qty: trade.q,
       firstId: trade.f,
       lastId: trade.l,
       time: trade.T,
