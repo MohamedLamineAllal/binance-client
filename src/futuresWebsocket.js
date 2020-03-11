@@ -352,9 +352,12 @@ const liquidationOrderTransform = ({
 
 // _______________________________ depth
 
-const depth = (payload, cb) => {
+const partialDepth = (payload, cb) => {
   const { symbol, speed } = payload;
-  const w = openWebSocket(`${BASE}/ws/${symbol.toLowerCase()}@depth${speed ? `@${speed}` : ''}`);
+  let { level } = payload;
+  if (!level) { level = 10; };
+
+  const w = openWebSocket(`${BASE}/ws/${symbol.toLowerCase()}@depth${level}${speed && speed !== '250ms' ? `@${speed}` : ''}`);
 
   w.onmessage = msg => {
     const {
@@ -385,11 +388,11 @@ const depth = (payload, cb) => {
   return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
 }
 
-const partialDepth = (payload, cb) => {
-  let { symbol, level, speed } = payload;
-  if (!level) { level = 10; };
 
-  const w = openWebSocket(`${BASE}/ws/${symbol.toLowerCase()}@depth${level}${speed && speed !== '250ms' ? `@${speed}` : ''}`);
+
+const depth = (payload, cb) => {
+  const { symbol, speed } = payload;
+  const w = openWebSocket(`${BASE}/ws/${symbol.toLowerCase()}@depth${speed ? `@${speed}` : ''}`);
 
   w.onmessage = msg => {
     const {
