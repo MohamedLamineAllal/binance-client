@@ -1,11 +1,13 @@
 # binance-client
 
 > NOTICE: BINANCE FUTURES support
+>
 > The support mostly fully added (only user streams weren't added)
 
 > The doc on that matter wasn't updated! If you go for this package check the code source and the official doc
 
 > To note the Binance futures official doc is way nice
+>
 > https://binance-docs.github.io/apidocs/futures/en/
 
 > The same order as the official doc was followed for the function implementation
