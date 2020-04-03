@@ -4,6 +4,8 @@
 >
 > The support mostly fully added (only user streams weren't added)
 
+> Binance futures typescript supported
+
 > The doc on that matter wasn't updated! If you go for this package check the code source and the official doc
 
 > To note the Binance futures official doc is way nice
