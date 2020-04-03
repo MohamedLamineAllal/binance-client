@@ -80,9 +80,9 @@ const candles = (payload, interval, cb) => {
         n: trades,
         i: interval,
         x: isFinal,
-        q: quoteVolume,
-        V: buyVolume,
-        Q: quoteBuyVolume,
+        q: quoteAssetVolume,
+        V: buyAssetVolume,
+        Q: quoteBuyAssetVolume
       } = tick
 
       cb({
@@ -101,9 +101,9 @@ const candles = (payload, interval, cb) => {
         trades,
         interval,
         isFinal,
-        quoteVolume,
-        buyVolume,
-        quoteBuyVolume,
+        quoteAssetVolume,
+        buyAssetVolume,
+        quoteBuyAssetVolume
       })
     }
 

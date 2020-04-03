@@ -54,12 +54,23 @@ const aggTradesOutputMapping = (d) => ({
   tradeTime: d.T,
   isBuyerMaker: d.m
 })
-const aggTrades = (payload, cb) => tradesInternal(payload, 'aggTrade', aggTradesOutputMapping, cb)
+const aggTrades = (symbol, cb) => tradesInternal(symbol, 'aggTrade', aggTradesOutputMapping, cb)
 
 // ____________________________ trade
 
-const tradesInternal = (payload, streamName, outputMap, cb) => {
-  const { symbol } = payload;
+const tradesOutputMapping = (d) => ({
+  eventType: d.e,
+  eventTime: d.E,
+  symbol: d.s,
+  tradeId: d.t,
+  price: d.p,
+  quantity: d.q,
+  tradeTime: d.T,
+  isBuyerMaker: d.m
+})
+const trades = (symbol, cb) => tradesInternal(symbol, 'trade', tradesOutputMapping, cb)
+
+const tradesInternal = (symbol, streamName, outputMap, cb) => {
   const w = openWebSocket(`${BASE}/ws/${symbol.toLowerCase()}@${streamName}`)
   w.onmessage = msg => {
     cb(outputMap(JSON.parse(msg.data)))
@@ -133,7 +144,7 @@ const markPriceAll = (payload, cb) => {
 // _______________________________ candles (Kline/Candlestick)
 
 const candles = (symbol, interval, cb) => {
-  if (!interval || !cb) {
+  if (!symbol || !interval || !cb) {
     throw new Error('Please pass a symbol, interval and callback.')
   }
 
@@ -423,23 +434,6 @@ const depth = (payload, cb) => {
 
   return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
 }
-
-
-
-const tradesOutputMapping = (d) => ({
-  eventType: d.e,
-  eventTime: d.E,
-  symbol: d.s,
-  tradeId: d.t,
-  price: d.p,
-  quantity: d.q,
-  buyerOrderId: d.b,
-  sellerOrderId: d.a,
-  tradeTime: d.T,
-  isBuyerMaker: d.m,
-  isBestMatch: d.M
-})
-const trades = (payload, cb) => tradesInternal(payload, 'trade', tradesOutputMapping, cb)
 
 const userTransforms = {
   outboundAccountInfo: m => ({

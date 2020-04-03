@@ -73,8 +73,9 @@ declare module 'binance-client' {
         lastId: number;
         time: number;
         isBuyerMaker: boolean;
-        isBestMatch: boolean;
     }
+
+    export type FAggregatedTrade = AggregatedTrade;
 
     interface Trade {
         id: number,
@@ -83,8 +84,126 @@ declare module 'binance-client' {
         quoteQty: string,
         time: number,
         isBuyerMaker: boolean,
-        isBestMatch: boolean
+        isBestMatch: boolean // TODO: verify
+    }
+
+    interface FTrade {
+        id: number,
+        price: string,
+        quantity: string,
+        quoteQty: string,
+        time: number,
+        isBuyerMaker: boolean
     } 
+
+    export interface FMarkPrice {
+        symbol: string,
+        markPrice: string,
+        lastFundingRate: string
+        nextFundingTime: number,
+        time: number
+    }
+
+    export interface FFundingRate {
+        symbol: string,
+        fundingRate: string,
+        fundingTime: number,
+        time: number
+    }
+
+    interface FDailyState {
+        symbol: string,
+        priceChange: string,
+        priceChangePercent: string,
+        weightedAvgPrice: string,
+        prevClosePrice: string,
+        lastPrice: string,
+        lastQty: string,
+        openPrice: string,
+        highPrice: string,
+        lowPrice: string,
+        volume: string,
+        quoteVolume: string,
+        openTime: number,
+        closeTime: number,
+        firstId: number,   // First tradeId
+        lastId: number,    // Last tradeId
+        count: number 
+    }
+
+    interface FPrice {
+        symbol: string,
+        price: string
+    }
+
+    interface FReducedPrice {
+        [symbol: string]: FPrice
+    }
+
+    interface FBookTicker {
+        symbol: string,
+        bidPrice: string,
+        bidQty: string,
+        askPrice: string,
+        askQty: string
+    }
+
+    interface FReducedBookTicker {
+        [symbol: string]: FBookTicker
+    }
+
+    interface FForceOrder {
+        symbol: string, // SYMBOL
+        price: string, // ORDER_PRICE
+        origQty: string, // ORDER_AMOUNT
+        executedQty: string, // FILLED_AMOUNT
+        averagePrice: string, // AVG_PRICE
+        status: FOrderStatus,                 
+        timeInForce: FTimeInForce,               
+        type: FOrderType,
+        side: FOrderSide,
+        time: number 
+    }
+
+    interface FOpenInterest {
+        symbol: string,
+        openInterest: string
+    }
+
+    interface FLeverageBrackets {
+        symbol: string,
+        brackets: FLeverageBracket[]
+    }
+
+    interface FLeverageBracket {
+        bracket: number,
+        initialLeverage: number,  // Max initial leverage for this bracket
+        notionalCap: number,  // Cap notional of this bracket
+        notionalFloor: number,  // Notionl threshold of this bracket 
+        maintMarginRatio: number // Maintenance ratio for this bracket
+    }
+
+    interface FReducedLeverageBrackets {
+        [symbol: string]: FLeverageBracket[]
+    }
+
+    interface FAccountTransfer {
+        tranId: number
+    }
+
+    interface FAccountHistoryTransfer {
+        asset: string,
+        tranId: number,
+        amount: string,
+        type: string,
+        timestamp: number,
+        status: string
+    }
+
+    interface FAccountTransferHistory {
+        rows: FAccountHistoryTransfer[],
+        total: number
+    }
 
     export interface AssetBalance {
         asset: string;
@@ -161,8 +280,10 @@ declare module 'binance-client' {
     }
 
     export interface Binance {
+        // ________________________________________ Binance
         accountInfo(options?: { useServerTime: boolean }): Promise<Account>;
         tradeFee(): Promise<TradeFeeResult>;
+        trades(options: { symbol: string, limit?: number }): Promise<Trade[]>;
         aggTrades(options?: { symbol: string, fromId?: string, startTime?: number, endTime?: number, limit?: number }): Promise<AggregatedTrade[]>;
         allBookTickers(): Promise<{ [key: string]: Ticker }>;
         book(options: { symbol: string, limit?: number }): Promise<OrderBook>;
@@ -173,8 +294,8 @@ declare module 'binance-client' {
         prices(): Promise<{ [index: string]: string }>;
         avgPrice(options?: { symbol: string }): Promise<AvgPriceResult | AvgPriceResult[]>;
         time(): Promise<number>;
-        trades(options: { symbol: string, limit?: number }): Promise<Trade[]>;
         ws: WebSocket;
+        fws: FuturesWebSocket;
         myTrades(options: { symbol: string, limit?: number, fromId?: number, useServerTime?: boolean }): Promise<MyTrade[]>;
         getOrder(options: { symbol: string, orderId: number, origClientOrderId?: string, recvWindow?: number, useServerTime?: boolean }): Promise<QueryOrderResult>;
         cancelOrder(options: { symbol: string; orderId: number, origClientOrderId?: string, newClientOrderId?: string, recvWindow?: number, useServerTime?: boolean }): Promise<CancelOrderResult>;
@@ -188,6 +309,47 @@ declare module 'binance-client' {
         assetDetail(): Promise<AssetDetail>;
         withdrawHistory(options: { asset: string, status?: number, startTime?: number, endTime?: number }): Promise<WithdrawHistoryResponse>;
         depositHistory(options: { asset: string, status?: number, startTime?: number, endTime?: number }): Promise<DepositHistoryResponse>;
+
+        // _____________________________________ Binance futures
+        futuresPing: () => Promise<true>;
+        futuresTime: () => Promise<number>;
+        futuresExchangeInfo: () => Promise<FExchangeInfo>;
+        futuresBook: (payload: { symbol: string, limit?: number }) => Promise<FOrderBook>;
+        futuresTrades: (payload: { symbol: string, limit?: number }) => Promise<FTrade[]>;
+        futuresTradesHistory: (payload: { symbol: string, limit?: number, fromId?: number }) => Promise<FTrade[]>;
+        futuresAggTrades: (payload: { symbol: string, fromId?: string, startTime?: number, endTime?: number, limit?: number }) => Promise<FAggregatedTrade[]>;
+        futuresCandles: (payload: FCandlesOptions) => Promise<FCandleChartResult>;
+        // ______________ futures exclusive
+        futuresMarkPrice: (payload: { symbol?: string }) => Promise<FMarkPrice>;
+        futuresFundingRate: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number }) => Promise<FFundingRate>;
+        futuresDailyStats: (payload: { symbol?: string }) => Promise<FDailyState>;
+        futuresPrice: (payload: { symbol?: string, reduce?: boolean }) => Promise<FPrice | FPrice[] | FReducedPrice>;
+        // TODO: Verify that adding reduce to the payload doesn't pose a problem
+        // futuresAvgPrice: (payload: { symbol?: string }) => Promise<FMarkPrice>;
+        futuresBookTicker: (payload: { symbol?: string, reduce?: boolean }) => Promise<FBookTicker | FBookTicker[] | FReducedBookTicker>;
+        futuresAllForceOrders: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number }) => Promise<FForceOrder | FForceOrder[]>;
+        futuresOpenInterest: (payload: { symbol: string }) => Promise<FOpenInterest>;
+        futuresLeverageBracket: (payload: { symbol?: string }) => Promise<FLeverageBrackets | FLeverageBrackets[] | FReducedLeverageBrackets>;
+        futuresAccountTransfer: (payload: { asset: string, amount: number, type: number, recvWindow?: number }) => Promise<FAccountTransfer>;
+        futuresAccountTransactionHistory: (payload: { asset: string, startTime: number, endTime?: number, current?: number, size?: number, recvWindow?: number }) => Promise<FAccountTransferHistory>;
+        futuresOrder: (payload: FNewOrder) => Promise<FOrder>;
+        futuresOrderTest: (payload: { symbol?: string }) => Promise<FMarkPrice>;
+        futuresGetOrder: (payload: { symbol: string, orderId?: number, origClientOrderId: string, recvWindow: number }) => Promise<FOrderState>;
+        futuresCancelOrder: (payload: { symbol: string, orderId?: number, origClientOrderId: string, recvWindow: number }) => Promise<FOrder>;
+        futuresCancelAllOpenOrders: (payload: { symbol: string, recvWindow?: number }) => Promise<FCancelAllOrderResp>;
+        futuresCancelMultipleOrders: (payload: { symbol: string, orderIdList?: number[], origClientOrderIdList?: number[], recvWindow?: number }) => Promise<(FOrder | FCancelAllOrderResp)[]>;
+        futuresGetOpenOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow?: number}) => Promise<FOrderState>;
+        futuresGetAllOpenOrders: (payload: { symbol: string, recvWindow?: number }) => Promise<FOrderState[]>;
+        futuresGetAllOrders: (payload: { symbol: string, orderId?: number, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }) => Promise<FOrderState[]>;
+        futuresAccountBalance: (payload: { recvWindow?: number }) => Promise<FAccountBalance[]>;
+        futuresAccountInfo: (payload: { recvWindow?: number }) => Promise<FAccountInfo>;
+        futuresChangeLeverage: (payload: { symbol: string, leverage: number, recvWindow?: number }) => Promise<FLeverageChangeResp>;
+        futuresChangeMarginType: (payload: { symbol: string, marginType: FMarginType, recvWindow?: number }) => Promise<CodeMsgResp>;
+        futuresModifyPositionMargin: (payload: { symbol: string, amount: number, type: number, recvWindow?: number }) => Promise<FModifyPositionMarginResp>;
+        futuresPositionMarginHistory: (payload: { symbol: string, type?: number, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }) => Promise<FPositionMargin[]>;
+        futuresPositionRisk: (payload: { recvWindow?: number }) => Promise<FPositionRisk[]>;
+        futuresUserTrades: (payload: { symbol: string, startTime?: number, endTime?: number, fromId?: number, limit?: number, recvWindow?: number }) => Promise<FUserTrade>;
+        futuresIncomeHistory: (payload: { symbol?: string, incomeType?: FIncomeType, startTime?: number, endTime?: number, limit?: number, revWindow?: number }) => Promise<FIncome>;
     }
 
     export interface HttpError extends Error {
@@ -196,14 +358,34 @@ declare module 'binance-client' {
     }
 
     export interface WebSocket {
-        depth: (pair: string | string[], callback: (depth: Depth) => void) => ReconnectingWebSocketHandler;
+        depth: (symbol: string | string[], callback: (depth: Depth) => void) => ReconnectingWebSocketHandler;
         partialDepth: (options: { symbol: string, level: number } | { symbol: string, level: number }[], callback: (depth: PartialDepth) => void) => ReconnectingWebSocketHandler;
-        ticker: (pair: string | string[], callback: (ticker: Ticker) => void) => ReconnectingWebSocketHandler;
+        ticker: (symbol: string | string[], callback: (ticker: Ticker) => void) => ReconnectingWebSocketHandler;
         allTickers: (callback: (tickers: Ticker[]) => void) => ReconnectingWebSocketHandler;
-        candles: (pair: string | string[], period: string, callback: (ticker: Candle) => void) => ReconnectingWebSocketHandler;
-        trades: (pairs: string | string[], callback: (trade: WsTrade) => void) => ReconnectingWebSocketHandler;
-        aggTrades: (pairs: string | string[], callback: (trade: WsAggregatedTrade) => void) => ReconnectingWebSocketHandler;
+        candles: (symbol: string | string[], interval: string, callback: (ticker: Candle) => void) => ReconnectingWebSocketHandler;
+        trades: (symbols: string | string[], callback: (trade: WsTrade) => void) => ReconnectingWebSocketHandler;
+        aggTrades: (symbols: string | string[], callback: (trade: WsAggregatedTrade) => void) => ReconnectingWebSocketHandler;
         user: (callback: (msg: OutboundAccountInfo | ExecutionReport) => void) => ReconnectingWebSocketHandler;
+    }
+
+    export interface FuturesWebSocket {
+        depth: (payload: { symbol: string, speed: string }, callback: (depth: FWsDepth) => void) => ReconnectingWebSocketHandler;
+        partialDepth: (payload: { symbol: string, speed?: string, level?: number }, callback: (depth: FWsPartialDepth) => void) => ReconnectingWebSocketHandler;
+        markPrice: (payload: { symbol: string, speed?: string }, callback: (markPrice: MarkPrice) => void) => ReconnectingWebSocketHandler;
+        markPriceAll: (payload: { speed?: string, reduce?: boolean }, callback: (markPrices: MarkPrice[] | ReducedMarkPrice) => void) => ReconnectingWebSocketHandler;
+        candles: (symbol: string, interval: string, callback: (candle: FWsCandle) => void) => ReconnectingWebSocketHandler;
+        trades: (symbols: string, callback: (trade: FWsTrade) => void) => ReconnectingWebSocketHandler;
+        aggTrades: (symbols: string, callback: (trade: FWsAggregatedTrade) => void) => ReconnectingWebSocketHandler;
+        ticker: (symbol: string | string[], callback: (ticker: FWsTicker) => void) => ReconnectingWebSocketHandler;
+        miniTicker: (symbol: string, callback: (miniTicker: FWsMiniTicker) => void) => ReconnectingWebSocketHandler;
+        allMiniTickers: (callback: (miniTickers: FWsMiniTicker[]) => void) => ReconnectingWebSocketHandler;
+        allTickers: (callback: (tickers: FWsTicker[]) => void) => ReconnectingWebSocketHandler;
+        bookTicker: (symbol: string, callback: (bookTicker: FWsBookTicker) => void) => ReconnectingWebSocketHandler;
+        allBookTicker: (callback: (bookTickers: FWsBookTicker[]) => void) => ReconnectingWebSocketHandler;
+        liquidationOrder: (symbol: string, callback: (liquidationOrder: FWsLiquidationOrder) => void) => ReconnectingWebSocketHandler;
+        allLiquidationOrder: (callback: (liquidationOrders: FWsLiquidationOrder[]) => void) => ReconnectingWebSocketHandler;
+        user: (callback: (msg: OutboundAccountInfo | ExecutionReport) => void) => ReconnectingWebSocketHandler;
+        multiStreams: FMultiStreamsFactory
     }
 
     export type ReconnectingWebSocketHandler = (options?: {keepClosed: boolean, fastClose: boolean, delay: number}) => void
@@ -226,18 +408,31 @@ declare module 'binance-client' {
         ONE_MONTH = '1M'
     }
 
+    export type FCandleChartInterval = CandleChartInterval;
+
     export type RateLimitType =
         | 'REQUEST_WEIGHT'
         | 'ORDERS';
+
+    export type FRateLimitType = RateLimitType;
 
     export type RateLimitInterval =
         | 'SECOND'
         | 'MINUTE'
         | 'DAY';
+    
+    export type FRateLimitInterval = RateLimitInterval;
 
     export interface ExchangeInfoRateLimit {
         rateLimitType: RateLimitType;
         interval: RateLimitInterval;
+        intervalNum: number;
+        limit: number;
+    }
+
+    export interface FExchangeInfoRateLimit {
+        rateLimitType: FRateLimitType;
+        interval: FRateLimitInterval;
         intervalNum: number;
         limit: number;
     }
@@ -305,6 +500,8 @@ declare module 'binance-client' {
         | SymbolMaxNumOrdersFilter
         | SymbolMaxAlgoOrdersFilter;
 
+    export type FSymbolFilter = SymbolFilter;
+
     export interface Symbol {
         symbol: string;
         status: string;
@@ -317,6 +514,18 @@ declare module 'binance-client' {
         filters: SymbolFilter[];
     }
 
+    export interface FSymbol {
+        filters: FSymbolFilter,
+        maintMarginPercent: string,
+        pricePrecision: number,
+        quantityPrecision: number,
+        requiredMarginPercent: string,
+        status: string,
+        OrderType: FOrderType,
+        symbol: string,
+        timeInForce: FTimeInForce
+    }
+
     export interface ExchangeInfo {
         timezone: string;
         serverTime: number;
@@ -325,11 +534,21 @@ declare module 'binance-client' {
         symbols: Symbol[];
     }
 
+    export interface FExchangeInfo {
+        timezone: string;
+        serverTime: number;
+        rateLimits: FExchangeInfoRateLimit[];
+        exchangeFilters: FExchangeFilter[];
+        symbols: FSymbol[];
+    }
+
     export interface OrderBook {
         lastUpdateId: number;
         asks: Bid[];
         bids: Bid[];
     }
+
+    export type FOrderBook = OrderBook;
 
     export interface NewOrder {
         icebergQty?: string;
@@ -370,7 +589,196 @@ declare module 'binance-client' {
         fills?: OrderFill[];
     }
 
+    interface FOrder {
+        clientOrderId: string;
+        executedQty: string;
+        orderId: number;
+        origQty: string;
+        price: string;
+        reduceOnly: boolean;
+        side: FOrderSide;
+        status: FOrderStatus;
+        stopPrice?: string;
+        symbol: string;
+        timeInForce: FTimeInForce;
+        type: FOrderType;
+        activatePrice: string,
+        priceRate: string,
+        updateTime: number,
+        workingType: FOrderWorkingType;
+    }
+
+    export interface FNewOrder {
+        symbol: string,
+        side: FOrderSide,
+        type: FOrderType,
+        timeInForce?: FTimeInForce,
+        quantity: number,
+        reduceOnly?: "true" | "false",
+        price?: number,
+        newClientOrderId?: string,
+        stopPrice?: number,
+        activationPrice?: number,
+        callbackRate?: number,
+        workingType?: FOrderWorkingType,
+        recvWindow?: number
+    }
+
+    export interface FOrderState {
+        avgPrice: string,
+        clientOrderId: string;
+        executedQty: string;
+        orderId: number;
+        origQty: string;
+        origType: FOrderType,
+        price: string;
+        reduceOnly: boolean;
+        side: FOrderSide;
+        status: FOrderStatus;
+        stopPrice?: string;
+        symbol: string;
+        time: number,
+        timeInForce: FTimeInForce;
+        type: FOrderType;
+        activatePrice: string,
+        priceRate: string,
+        updateTime: number,
+        workingType: FOrderWorkingType;
+    }
+
+    interface FCancelAllOrderResp {
+        code: string,
+        msg: string
+    }
+
+    interface FAccountBalance {
+        accountAlias: string, // unique account code
+        asset: string,
+        balance: string,
+        withdrawAvailable: string
+    }
+
+    interface FAccountInfo {
+        "assets": FAssetAccountInfo[],
+        canDeposit: boolean,
+        canTrade: boolean,
+        canWithdraw: boolean,
+        feeTier: number,
+        maxWithdrawAmount: string,
+        positions: FPositionAccountInfo[],
+        totalInitialMargin: string,
+        totalMaintMargin: string,
+        totalMarginBalance: string,
+        totalOpenOrderInitialMargin: string,
+        totalPositionInitialMargin: string,
+        totalUnrealizedProfit: string,
+        totalWalletBalance: string,
+        updateTime: number
+    }
+
+    interface FAssetAccountInfo {
+        asset: string,
+        initialMargin: string,
+        maintMargin: string,
+        marginBalance: string,
+        maxWithdrawAmount: string,
+        openOrderInitialMargin: string,
+        positionInitialMargin: string,
+        unrealizedProfit: string,
+        walletBalance: string
+    }
+
+    interface FPositionAccountInfo {
+        isolated: boolean, 
+        leverage: string,
+        initialMargin: string,
+        maintMargin: string,
+        openOrderInitialMargin: string,
+        positionInitialMargin: string,
+        symbol: string,
+        unrealizedProfit: string
+    }
+
+    export interface FLeverageChangeResp {
+        leverage: number,
+        maxNotionalValue: string,
+        symbol: string
+    }
+
+    export interface CodeMsgResp {
+        code: string,
+        msg: string
+    }
+
+    export type FMarginType =
+        | 'ISOLATED'
+        | 'CROSSED';
+
+    export interface FModifyPositionMarginResp {
+        amount: number,
+        code: number,
+        msg: string,
+        type: number
+    }
+
+    export interface FPositionMargin {
+        amount: string,
+        asset: string,
+        symbol: string,
+        time: number,
+        type: number
+    }
+
+    export interface FPositionRisk {
+        entryPrice: string,
+        marginType: string,       
+        isAutoAddMargin: string,     
+        isolatedMargin: string, 
+        leverage: string,         // current initial leverage
+        liquidationPrice: string,
+        markPrice: string,
+        maxNotionalValue: string, // notional value limit of current initial leverage
+        positionAmt: string,      // Positive for long, negative for short
+        symbol: string,
+        unRealizedProfit: string
+    }
+
+    export interface FUserTrade {
+        buyer: boolean,
+        commission: string,
+        commissionAsset: string,
+        id: number,
+        maker: boolean,
+        orderId: number,
+        price: string,
+        qty: string,
+        quoteQty: string,
+        realizedPnl: string,
+        side: string,
+        symbol: string,
+        time: number
+    }
+
+    interface FIncome {
+        symbol: string,
+        incomeType: string,
+        income: string,
+        asset: string,
+        info: string,
+        time: number
+    }
+
+    type FIncomeType =
+        | 'TRANSFER'
+        | 'WELCOME_BONUS'
+        | 'REALIZED_PNL'
+        | 'FUNDING_FEE'
+        | 'COMMISSION'
+        | 'INSURANCE_CLEAR';
+
+
     export type OrderSide = 'BUY' | 'SELL';
+    export type FOrderSide = OrderSide;
 
     export type OrderStatus =
         | 'CANCELED'
@@ -381,6 +789,14 @@ declare module 'binance-client' {
         | 'PENDING_CANCEL'
         | 'REJECTED';
 
+    export type FOrderStatus =
+        | 'NEW'
+        | 'PARTIALLY_FILLED'
+        | 'FILLED'
+        | 'CANCELED'
+        | 'REJECTED'
+        | 'EXPIRED';
+
     export type OrderType =
         | 'LIMIT'
         | 'LIMIT_MAKER'
@@ -390,9 +806,23 @@ declare module 'binance-client' {
         | 'TAKE_PROFIT'
         | 'TAKE_PROFIT_LIMIT';
 
+    export type FOrderType =
+        | 'LIMIT'
+        | 'MARKET'
+        | 'STOP'
+        | 'STOP_MARKET'
+        | 'TAKE_PROFIT'
+        | 'TAKE_PROFIT_MARKET'
+        | 'TRAILING_STOP_MARKET';
+
+    export type FOrderWorkingType =
+        | 'MARK_PRICE'
+        | 'CONTRACT_PRICE';
+
     export type NewOrderRespType = 'ACK' | 'RESULT' | 'FULL';
 
     export type TimeInForce = 'GTC' | 'IOC' | 'FOK';
+    export type FTimeInForce = 'GTC' | 'IOC' | 'FOK' | 'GTX';
 
     export type ExecutionType =
         | 'NEW'
@@ -416,6 +846,18 @@ declare module 'binance-client' {
         askDepth: BidDepth[];
     }
 
+    interface FWsDepth {
+        eventType: string;
+        eventTime: number;
+        symbol: string;
+        firstUpdateId: number;
+        finalUpdateId: number;
+        transactionTime: number,
+        lastUpdateIdInLastStream: number,
+        bidDepth: BidDepth[];
+        askDepth: BidDepth[];
+    }
+
     interface BidDepth {
         price: string;
         quantity: string;
@@ -426,6 +868,31 @@ declare module 'binance-client' {
         level: number;
         bids: Bid[];
         asks: Bid[];
+    }
+
+    interface FWsPartialDepth {
+        eventType: string,
+        eventTime: number,
+        symbol: string,
+        firstUpdateId: number,
+        finalUpdateId: number,
+        transactionTime: number,
+        lastUpdateIdInLastStream: number,
+        bidDepth: BidDepth[]
+        askDepth: BidDepth[]
+    }
+
+    interface MarkPrice {
+        eventType: string,
+        eventTime: number,
+        symbol: string,
+        markPrice: string,
+        fundingRate: string,
+        nextFundingTime: number
+    }
+
+    interface ReducedMarkPrice {
+        [symbol: string]: MarkPrice
     }
 
     interface Bid {
@@ -459,6 +926,47 @@ declare module 'binance-client' {
         totalTrades: number;
     }
 
+    interface FWsTicker {
+        eventType: string;
+        eventTime: number;
+        symbol: string;
+        priceChange: string;
+        priceChangePercent: string;
+        weightedAvgPrice: string;
+        lastPrice: string,
+        lastQuantity: string,    
+        open: string;
+        high: string;
+        low: string;
+        volume: string;
+        volumeQuote: string;
+        openTime: number;
+        closeTime: number;
+        firstTradeId: number;
+        lastTradeId: number;
+        totalTrades: number;
+    }  
+
+    interface FWsMiniTicker {
+        eventType: number,
+        eventTime: number,
+        symbol: string,
+        close: string,
+        open: string,
+        high: string,
+        low: string,
+        volume: string,
+        quoteVolume: string
+    }
+
+    interface FWsBookTicker {
+        updateId: number
+        bestBidPrice: string,
+        bestBidQty: string,
+        bestAskPrice: string,
+        bestAskQty: string
+    }
+
     interface Candle {
         eventType: string;
         eventTime: number;
@@ -475,10 +983,32 @@ declare module 'binance-client' {
         trades: number;
         interval: string;
         isFinal: boolean;
-        quoteVolume: string;
-        buyVolume: string;
-        quoteBuyVolume: string;
+        quoteAssetVolume: string,
+        buyAssetVolume: string,
+        quoteBuyAssetVolume: string
     }
+
+    type FWsCandle = Candle;
+
+    interface FWsLiquidationOrder {
+        eventType: string,
+        eventTime: number,
+        order: FLiquidationOrderObj
+    }
+
+    interface FLiquidationOrderObj {
+        symbol: string,
+        side: string,
+        orderType: string,
+        timeInForce: string,
+        quantity: string,
+        averagePrice: string,
+        status: string,
+        lastFilledQuantity: string,
+        filledAccumulatedQuantity: string,
+        tradeTime: number
+    }
+
 
     interface Message {
         eventType: EventType;
@@ -619,6 +1149,14 @@ declare module 'binance-client' {
         endTime?: number;
     }
 
+    export interface FCandlesOptions {
+        symbol: string;
+        interval: FCandleChartInterval;
+        limit?: number;
+        startTime?: number;
+        endTime?: number;
+    };
+
     export interface CandleChartResult {
         openTime: number;
         open: string;
@@ -629,9 +1167,11 @@ declare module 'binance-client' {
         closeTime: number;
         quoteVolume: string;
         trades: number;
-        baseAssetVolume: string;
-        quoteAssetVolume: string;
+        buyBaseAssetVolume: string;
+        buyQuoteAssetVolume: string;
     }
+
+    export type FCandleChartResult = CandleChartResult;
 
     interface WsTrade {
         eventType: string;
@@ -640,12 +1180,23 @@ declare module 'binance-client' {
         tradeId: number;
         price: string;
         quantity: string;
-        buyerOrderId: number;
-        sellerOrderId: number;
+        // buyerOrderId: number;
+        // sellerOrderId: number; // TODO: check if exists
         tradeTime: number;
         isBuyerMaker: boolean;
         isBestMatch: boolean;
     }
+
+    interface FWsTrade {
+        eventType: string;
+        eventTime: number;
+        symbol: string;
+        tradeId: number;
+        price: string;
+        quantity: string;
+        tradeTime: number;
+        isBuyerMaker: boolean;
+    }; 
 
     interface WsAggregatedTrade {
         eventType: string;
@@ -658,6 +1209,36 @@ declare module 'binance-client' {
         lastTradeId: number;
         tradeTime: number;
         isBuyerMaker: boolean;
-        isBestMatch: boolean;
+        isBestMatch: boolean; // TODO: check (remove)
+    }
+
+    interface FWsAggregatedTrade {
+        eventType: string;
+        eventTime: number;
+        symbol: string;
+        aggId: number;
+        price: string;
+        quantity: string;
+        firstTradeId: number;
+        lastTradeId: number;
+        tradeTime: number;
+        isBuyerMaker: boolean;
+    }
+
+    type FMultiStreamsFactory = (
+        symbolMethodObj: FMS_SymbolMethodObj | FMS_SymbolMethodObj[],
+        callback: (data: any) => void // TODO: data type
+    ) => FMultiStreamManager
+
+    interface FMS_SymbolMethodObj {
+        symbol: string,
+        endPoint: string
+    }
+
+    interface FMultiStreamManager {
+        ws: any // TODO: type
+        subscribe: (symbolMethodObj: FMS_SymbolMethodObj | FMS_SymbolMethodObj[]) => void,
+        unsubscribe: (symbolMethodObj: FMS_SymbolMethodObj | FMS_SymbolMethodObj[]) => void,
+        close: ReconnectingWebSocketHandler
     }
 }

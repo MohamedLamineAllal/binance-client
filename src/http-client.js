@@ -227,8 +227,7 @@ const aggTrades = (pubCall, payload) =>
       firstTradeId: trade.f, // TODO: change the doc (And Exchange api)
       lastTradeId: trade.l,
       time: trade.T,
-      isBuyerMaker: trade.m,
-      isBestMatch: trade.M,
+      isBuyerMaker: trade.m
     })),
   )
 
@@ -345,8 +344,8 @@ export default opts => {
             (payload.reduce && r.reduce((out, cur) => ((out[cur.symbol] = cur.price), out), {})) || r
           ):
           r.price // TODO: docs
-      ),
-    futuresAvgPrice: payload => futuresPubCall('/v3/avgPrice', payload),
+      ), // TODO: verify that adding reduce to the payload doesn't cause a problem
+    // futuresAvgPrice: payload => futuresPubCall('/v3/avgPrice', payload),
     futuresBookTicker: payload =>
       futuresPubCall('/v1/ticker/bookTicker', payload).then(r =>
         (
@@ -373,7 +372,7 @@ export default opts => {
     futuresCancelAllOpenOrders: payload => checkParams('futuresCancelOrder', payload, ['symbol']) && futuresPrivCall('/v1/allOpenOrders', payload, 'DELETE'),
     futuresCancelMultipleOrders: payload => checkParams('futuresCancelMultipleOrders', payload, ['symbol']) && futuresPrivCall('/v1/batchOrders', payload),
     futuresGetOpenOrder: payload => checkParams('futuresGetOpenOrder', payload, ['symbol']) && futuresPrivCall('/v1/openOrder', payload),
-    futuresGetAllOpenOrders: payload => futuresPrivCall('/v1/openOrders', payload).then(r => (payload.reduce && r.reduce((out, cur) => ((out[cur.symbol] = cur), out), {})) || r),
+    futuresGetAllOpenOrders: payload => futuresPrivCall('/v1/openOrders', payload),
     futuresGetAllOrders: payload => checkParams('futuresGetAllOrders', payload, ['symbol']) && futuresPrivCall('/v1/allOrders', payload),
     futuresAccountBalance: payload => futuresPrivCall('/v1/balance', payload),
     futuresAccountInfo: payload => futuresPrivCall('/v1/account', payload),
