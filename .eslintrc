@@ -1,3 +1,7 @@
 {
-  "extends": ["zavatta", "prettier"]
+  "extends": ["zavatta", "prettier"],
+  "rules": {
+    "no-inline-comments": "off",
+    "id-length": "off"
+  }
 }

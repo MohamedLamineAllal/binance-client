@@ -27,8 +27,7 @@ const makeQueryString = q =>
 const sendResult = call =>
   call.then(res => {
     // If response is ok, we can safely assume it is valid JSON
-    console.log('SEND RESULT::');
-    console.log(res); // TODO: add headers easy access
+    // TODO: add headers easy access
     if (res.ok) {
       return res.json()
     }
@@ -143,7 +142,7 @@ const privateCall = ({ apiKey, apiSecret, base, apiBase, getTime = defaultGetTim
 
     return sendResult(
       fetch(
-        `${base}${(path.includes('/wapi') || path.includes('/sapi')) ? '' : `/${apiBase}`}${path}${noData
+        `${base}${(path.includes('/wapi') || path.includes('/sapi')) ? '' : `/${apiBase}`}${path}${noData
           ? ''
           : makeQueryString(newData)}`,
         {
@@ -210,7 +209,7 @@ const order = (privCall, payload = {}, url) => {
 }
 
 /**
- * Zip asks and bids reponse from order book
+ * Zip asks and bids response from order book
  */
 const book = (pubCall, payload) =>
   pubCall('/v1/depth', payload).then(({ lastUpdateId, asks, bids }) => ({
@@ -275,7 +274,7 @@ export default opts => {
   const pubCall = publicCall({ ...opts, base, apiPathBase: API_PATH_BASE })
   const privCall = privateCall({ ...opts, base, pubCall })
   const kCall = keyCall({ ...opts, pubCall })
-  const futuresPubCall = publicCall({ ...opts, base: futureBase, apiPathBase: FEATURES_API_PATH_BASE });
+  const futuresPubCall = publicCall({ ...opts, base: futureBase, apiPathBase: FUTURES_API_PATH_BASE });
   const futuresPrivCall = privateCall({ ...opts, base: futureBase, pubCall });
   const futuresKCall = keyCall({ ...opts, pubCall: futuresPubCall });
 
@@ -360,7 +359,7 @@ export default opts => {
     futuresLeverageBracket: payload => futuresPubCall('/v1/leverageBracket', payload).then(r => 
         Array.isArray(r) ?
           (
-            (payload.reduce && r.reduce((out, cur) => ((out[cur.symbol] = cur.brackets), out), {}) || r)
+            (payload.reduce && r.reduce((out, cur) => ((out[cur.symbol] = cur.brackets), out), {}) || r)
           ):
           r.brackets // TODO: docs
     ),

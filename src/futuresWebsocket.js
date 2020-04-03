@@ -19,7 +19,8 @@ const multiStreams = (symbolMethodObjects, cb) => {
   const ws = openWebSocket(`${BASE}/stream?streams=${streamsNamesPath}`);
   ws.onmessage = msg => {
     const data = JSON.parse(msg);
-    cb(); // TODO:
+    cb(data);
+    // TODO:
   }
 
   return {
@@ -559,10 +560,19 @@ const user = opts => cb => {
 export default opts => ({
   depth,
   partialDepth,
+  markPrice,
+  markPriceAll,
   candles,
   trades,
   aggTrades,
   ticker,
+  miniTicker,
+  allMiniTickers,
   allTickers,
+  bookTicker,
+  allBookTicker,
+  liquidationOrder,
+  allLiquidationOrder,
   user: user(opts),
+  multiStreams
 })

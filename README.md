@@ -1,37 +1,22 @@
 # binance-client
 
-# Note about being a fork
-This is a fork of **binance-api-node**. This fork package hold a lot of fixes of many problems and errors. Mainly in the trade stream payload (the original strip a lot of information, and have wrong tradeId data). And also problems in the typescript declarations. And We are depending mainly on that package in our work. So we will be maintaining the project to suite our need. 
+> NOTICE: BINANCE FUTURES support
+> The support mostly fully added (only user streams weren't added)
 
-The process of sending PR to the original work and and getting handled is so slow. And then there is many problems with the original package. And i'm making many important changes. 
+> The doc on that matter wasn't updated! If you go for this package check the code source and the official doc
 
-I will be maintaining this fork.
+> To note the Binance futures official doc is way nice
+> https://binance-docs.github.io/apidocs/futures/en/
 
-> Note: the doc also is updated to reflect the changes.
+> The same order as the official doc was followed for the function implementation
 
-> You can expect too more responding (specially to review and accept PR)
+> The Doc here is just a big mess! We don't have time for it now! It will be updated at a later time!
 
-The doc need some updates (parts from the original) [i'll be updating them progressively]
+> For the future we will take full support and development responsibility for the package so it will be helpful to other people! As our work is based on it! We will keep it sharp at all times
 
-![alt text](https://i.imgur.com/5sEk5Ls.png) 
------->
-![alt text](https://i.imgur.com/yxwA9Zq.png)
+> No may be this is just the wrong destination! the package is well usable and all good! But there is no support! And all the doc is a mess
 
-and new AggTrades
-
-![alt text](https://i.imgur.com/kv4MykW.png)
-
-The inconsistency is dangerous
-![alt text](https://i.imgur.com/RaCU4kp.png)
-Wrong id !  (the one of the right is from the official API doc)
-
-All fixed! 
-
-More work is taken to make everything consistent and up to date with the official API. It will take a bit of time. As i'm doing that progressively. 
-
-You can help by pointing out the inconsistent data. And i'm open to any suggestions. Fill PR too if you can.
-
-  
+NOTICE: The Doc is out of date!  
 
 # DOC
 

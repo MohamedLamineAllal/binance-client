@@ -1,9 +1,11 @@
 import httpMethods from 'http-client'
 import wsMethods from 'websocket'
+import fwsMethods from './futuresWebsocket';
 
 export default (opts = {}) => ({
   ...httpMethods(opts),
   ws: wsMethods(opts),
+  fws: fwsMethods(opts) 
 })
 
 export const ErrorCodes = {
