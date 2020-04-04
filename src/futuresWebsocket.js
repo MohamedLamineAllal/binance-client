@@ -150,7 +150,7 @@ const candles = (symbol, interval, cb) => {
 
   const w = openWebSocket(`${BASE}/ws/${symbol.toLowerCase()}@kline_${interval}`)
 
-  w.onmessage(msg => {
+  w.onmessage = msg => {
     const { e: eventType, E: eventTime, s: symbol, k: tick } = JSON.parse(msg.data)
     const {
       t: startTime,
@@ -190,7 +190,7 @@ const candles = (symbol, interval, cb) => {
       buyAssetVolume,
       quoteBuyAssetVolume
     });
-  });
+  };
 
   return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
 }
