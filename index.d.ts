@@ -348,8 +348,8 @@ declare module 'binance-client' {
         futuresModifyPositionMargin: (payload: { symbol: string, amount: number, type: number, recvWindow?: number }) => Promise<FModifyPositionMarginResp>;
         futuresPositionMarginHistory: (payload: { symbol: string, type?: number, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }) => Promise<FPositionMargin[]>;
         futuresPositionRisk: (payload: { recvWindow?: number }) => Promise<FPositionRisk[]>;
-        futuresUserTrades: (payload: { symbol: string, startTime?: number, endTime?: number, fromId?: number, limit?: number, recvWindow?: number }) => Promise<FUserTrade>;
-        futuresIncomeHistory: (payload: { symbol?: string, incomeType?: FIncomeType, startTime?: number, endTime?: number, limit?: number, revWindow?: number }) => Promise<FIncome>;
+        futuresUserTrades: (payload: { symbol: string, startTime?: number, endTime?: number, fromId?: number, limit?: number, recvWindow?: number }) => Promise<FUserTrade[]>;
+        futuresIncomeHistory: (payload: { symbol?: string, incomeType?: FIncomeType, startTime?: number, endTime?: number, limit?: number, revWindow?: number }) => Promise<FIncome[]>;
     }
 
     export interface HttpError extends Error {
