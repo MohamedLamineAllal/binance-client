@@ -369,7 +369,7 @@ declare module 'binance-client' {
     }
 
     export interface FuturesWebSocket {
-        depth: (payload: { symbol: string, speed: string }, callback: (depth: FWsDepth) => void) => ReconnectingWebSocketHandler;
+        depth: (payload: { symbol: string, speed?: string }, callback: (depth: FWsDepth) => void) => ReconnectingWebSocketHandler;
         partialDepth: (payload: { symbol: string, speed?: string, level?: number }, callback: (depth: FWsPartialDepth) => void) => ReconnectingWebSocketHandler;
         markPrice: (payload: { symbol: string, speed?: string }, callback: (markPrice: MarkPrice) => void) => ReconnectingWebSocketHandler;
         markPriceAll: (payload: { speed?: string, reduce?: boolean }, callback: (markPrices: MarkPrice[] | ReducedMarkPrice) => void) => ReconnectingWebSocketHandler;
