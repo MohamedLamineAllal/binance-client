@@ -335,7 +335,7 @@ declare module 'binance-client' {
         futuresOrder: (payload: FNewOrder) => Promise<FOrder>;
         futuresOrderTest: (payload: { symbol?: string }) => Promise<FMarkPrice>;
         futuresGetOrder: (payload: { symbol: string, orderId?: number, origClientOrderId: string, recvWindow: number }) => Promise<FOrderState>;
-        futuresCancelOrder: (payload: { symbol: string, orderId?: number, origClientOrderId: string, recvWindow: number }) => Promise<FOrder>;
+        futuresCancelOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow: number }) => Promise<FOrder>;
         futuresCancelAllOpenOrders: (payload: { symbol: string, recvWindow?: number }) => Promise<FCancelAllOrderResp>;
         futuresCancelMultipleOrders: (payload: { symbol: string, orderIdList?: number[], origClientOrderIdList?: number[], recvWindow?: number }) => Promise<(FOrder | FCancelAllOrderResp)[]>;
         futuresGetOpenOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow?: number}) => Promise<FOrderState>;
