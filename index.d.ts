@@ -423,7 +423,7 @@ declare module 'binance-client' {
         allBookTicker: (callback: (bookTickers: FWsBookTicker[]) => void) => ReconnectingWebSocketHandler;
         liquidationOrder: (symbol: string, callback: (liquidationOrder: FWsLiquidationOrder) => void) => ReconnectingWebSocketHandler;
         allLiquidationOrder: (callback: (liquidationOrders: FWsLiquidationOrder[]) => void) => ReconnectingWebSocketHandler;
-        user: (callback: (msg: FWSOrderUpdateData | { type: string, [prop: string]: any }) => void) => ReconnectingWebSocketHandler; // TODO: ORDER AND ACCOUNT UPDATE TYPES
+        user: (callback: (msg: FWSOrderUpdateData | { eventType: string, [prop: string]: any }) => void) => ReconnectingWebSocketHandler; // TODO: ORDER AND ACCOUNT UPDATE TYPES
         multiStreams: FMultiStreamsFactory
     }
 

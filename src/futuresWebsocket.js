@@ -475,8 +475,8 @@ const userTransforms = {
 }
 
 export const userEventHandler = cb => msg => {
-  const { e: type, ...rest } = JSON.parse(msg.data)
-  cb(userTransforms[type] ? userTransforms[type](rest) : { type, ...rest })
+  const { e: eventType, ...rest } = JSON.parse(msg.data)
+  cb(userTransforms[eventType] ? userTransforms[eventType](rest) : { eventType, ...rest })
 }
 
 const user = opts => cb => {
