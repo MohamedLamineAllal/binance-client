@@ -299,7 +299,7 @@ declare module 'binance-client' {
         stopPrice: string,
         execType: FExecutionType,
         status: FOrderStatus,
-        id: number,
+        orderId: number,
         lastFilledQty: string,
         filledAccumulatedQty: string,
         lastFilledPrice: string,
