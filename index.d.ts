@@ -1041,6 +1041,7 @@ declare module 'binance-client' {
         orderType: string,
         timeInForce: string,
         quantity: string,
+        price: string,
         averagePrice: string,
         status: string,
         lastFilledQuantity: string,

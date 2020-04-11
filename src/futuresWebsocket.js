@@ -352,6 +352,7 @@ const liquidationOrderTransform = ({
     orderType: o.o,
     timeInForce: o.f,
     quantity: o.q,
+    price: o.p,
     averagePrice: o.ap,
     status: o.X,
     lastFilledQuantity: o.l,
