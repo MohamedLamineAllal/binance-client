@@ -279,6 +279,45 @@ declare module 'binance-client' {
         }
     }
 
+
+    export interface FWSOrderUpdateData {
+        eventType: string,
+        eventTime: number,
+        transacTime: number,
+        order: FWSOrderUpdateOrder 
+    }
+    
+    export interface FWSOrderUpdateOrder {
+        symbol: string,
+        clientOrderId: string,
+        side: FOrderSide,
+        type: FOrderType
+        timeInForce: FTimeInForce,
+        origQty: string,
+        origPrice: string,
+        avgPrice: string,
+        stopPrice: string,
+        execType: FExecutionType,
+        status: FOrderStatus,
+        id: number,
+        lastFilledQty: string,
+        filledAccumulatedQty: string,
+        lastFilledPrice: string,
+        commissionAsset: string,
+        commission: string,
+        tradeTime: number,
+        tradeId: number,
+        bidNational: string,
+        askNational: string,
+        isMaker: boolean,
+        isReduceOnly: boolean,
+        stopPriceType: string // TODO: type
+    }
+
+
+
+
+
     export interface Binance {
         // ________________________________________ Binance
         accountInfo(options?: { useServerTime: boolean }): Promise<Account>;
@@ -384,7 +423,7 @@ declare module 'binance-client' {
         allBookTicker: (callback: (bookTickers: FWsBookTicker[]) => void) => ReconnectingWebSocketHandler;
         liquidationOrder: (symbol: string, callback: (liquidationOrder: FWsLiquidationOrder) => void) => ReconnectingWebSocketHandler;
         allLiquidationOrder: (callback: (liquidationOrders: FWsLiquidationOrder[]) => void) => ReconnectingWebSocketHandler;
-        user: (callback: (msg: { type: string, [prop: string]: any }) => void) => ReconnectingWebSocketHandler; // TODO: ORDER AND ACCOUNT UPDATE TYPES
+        user: (callback: (msg: FWSOrderUpdateData | { type: string, [prop: string]: any }) => void) => ReconnectingWebSocketHandler; // TODO: ORDER AND ACCOUNT UPDATE TYPES
         multiStreams: FMultiStreamsFactory
     }
 
