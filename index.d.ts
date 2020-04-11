@@ -283,7 +283,7 @@ declare module 'binance-client' {
     export interface FWSOrderUpdateData {
         eventType: string,
         eventTime: number,
-        transacTime: number,
+        transactTime: number,
         order: FWSOrderUpdateOrder 
     }
     

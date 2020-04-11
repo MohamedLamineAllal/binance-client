@@ -444,7 +444,7 @@ const userTransforms = {
   ORDER_TRADE_UPDATE: m => ({
     eventType: 'ORDER_TRADE_UPDATE',
     eventTime: m.E,
-    transacTime: m.T,
+    transactTime: m.T,
     order: {
       symbol: m.s,
       clientOrderId: m.c,
