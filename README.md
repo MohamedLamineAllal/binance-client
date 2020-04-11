@@ -2,7 +2,7 @@
 
 > NOTICE: BINANCE FUTURES support
 >
-> The support mostly fully added (only user streams weren't added)
+> (user stream is supported ! ORDER_TRADE_UPDATE object is renamed! ACCOUNT_UPDATE not yet! But you can use it raw!)
 
 > Binance futures typescript supported
 
