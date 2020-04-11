@@ -435,52 +435,43 @@ const depth = (payload, cb) => {
   return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
 }
 
+
+
+// _____________________________________________ user data streams
+
 const userTransforms = {
-  outboundAccountInfo: m => ({
-    eventType: 'account',
+  // ACCOUNT_UPDATE: TODO:
+  ORDER_TRADE_UPDATE: m => ({
+    eventType: 'ORDER_TRADE_UPDATE',
     eventTime: m.E,
-    makerCommissionRate: m.m,
-    takerCommissionRate: m.t,
-    buyerCommissionRate: m.b,
-    sellerCommissionRate: m.s,
-    canTrade: m.T,
-    canWithdraw: m.W,
-    canDeposit: m.D,
-    lastAccountUpdate: m.u,
-    balances: m.B.reduce((out, cur) => {
-      out[cur.a] = { available: cur.f, locked: cur.l }
-      return out
-    }, {}),
-  }),
-  executionReport: m => ({
-    eventType: 'executionReport',
-    eventTime: m.E,
-    symbol: m.s,
-    newClientOrderId: m.c,
-    originalClientOrderId: m.C,
-    side: m.S,
-    orderType: m.o,
-    timeInForce: m.f,
-    quantity: m.q,
-    price: m.p,
-    executionType: m.x,
-    stopPrice: m.P,
-    icebergQuantity: m.F,
-    orderStatus: m.X,
-    orderRejectReason: m.r,
-    orderId: m.i,
-    orderTime: m.T,
-    lastTradeQuantity: m.l,
-    totalTradeQuantity: m.z,
-    priceLastTrade: m.L,
-    commission: m.n,
-    commissionAsset: m.N,
-    tradeId: m.t,
-    isOrderWorking: m.w,
-    isBuyerMaker: m.m,
-    creationTime: m.O,
-    totalQuoteTradeQuantity: m.Z,
-  }),
+    transacTime: m.T,
+    order: {
+      symbol: m.s,
+      clientOrderId: m.c,
+      side: m.S,
+      type: m.o,
+      timeInForce: m.f,
+      origQty: m.q,
+      origPrice: m.p,
+      avrgPrice: m.ap,
+      stopPrice: m.sp,
+      execType: m.x,
+      status: m.X,
+      id: m.i,
+      lastFilledQty: m.l,
+      filledAccumullatedQty: m.z,
+      lastFilledPrice: m.L,
+      commissionAsset: m.N,
+      commission: m.n,
+      tradeTime: m.T,
+      tradeId: m.t,
+      bidNational: m.b,
+      askNational: m.a,
+      isMaker: m.m,
+      isReduceOnly: m.R,
+      stopPriceType: m.wt 
+    }
+  })
 }
 
 export const userEventHandler = cb => msg => {
@@ -488,17 +479,30 @@ export const userEventHandler = cb => msg => {
   cb(userTransforms[type] ? userTransforms[type](rest) : { type, ...rest })
 }
 
-export const keepStreamAlive = (method, listenKey) => method({ listenKey })
-
 const user = opts => cb => {
-  const { getDataStream, keepDataStream, closeDataStream } = httpMethods(opts)
+  const {
+    futuresGetUserDataStream,
+    futuresKeepUserDataStream,
+    futuresCloseUserDataStream
+  } = httpMethods(opts)
+
   let currentListenKey = null
   let int = null
   let w = null
 
+  const handleEvent = msg => {
+    const { e: type, ...rest } = JSON.parse(msg.data)
+    if (type === 'listenKeyExpired') {
+      keepAlive(false);
+      return;
+    }
+    cb(userTransforms[type] ? userTransforms[type](rest) : { type, ...rest })
+  }
+
   const keepAlive = isReconnecting => {
     if (currentListenKey) {
-      keepStreamAlive(keepDataStream, currentListenKey).catch(() => {
+      clearInterval(int)
+      futuresKeepUserDataStream({}).catch(() => {
         closeStream({}, true)
 
         if (isReconnecting) {
@@ -514,7 +518,7 @@ const user = opts => cb => {
     if (currentListenKey) {
       clearInterval(int)
 
-      const p = closeDataStream({ listenKey: currentListenKey })
+      const p = futuresCloseUserDataStream()
 
       if (catchErrors) {
         p.catch(f => f)
@@ -526,14 +530,15 @@ const user = opts => cb => {
   }
 
   const makeStream = isReconnecting => {
-    return getDataStream()
+    return futuresGetUserDataStream()
       .then(({ listenKey }) => {
         w = openWebSocket(`${BASE}/${listenKey}`)
-        w.onmessage = msg => userEventHandler(cb)(msg)
+        w.onmessage = msg => handleEvent(msg)
 
         currentListenKey = listenKey
 
         int = setInterval(() => keepAlive(false), 50e3)
+        // TODO: think about using only listenKeyExpired
 
         keepAlive(true)
 
@@ -550,6 +555,7 @@ const user = opts => cb => {
 
   return makeStream(false)
 }
+
 
 export default opts => ({
   depth,

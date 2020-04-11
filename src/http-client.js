@@ -382,7 +382,10 @@ export default opts => {
     futuresPositionMarginHistory: payload => checkParams('futuresPositionMarginHistory', payload, ['symbol']) && futuresPrivCall('/v1/positionMargin/history', payload),
     futuresPositionRisk: payload => futuresPrivCall('/v1/positionRisk', payload),
     futuresUserTrades: payload => checkParams('futuresUserTrades', payload, ['symbol']) && futuresPrivCall('/v1/userTrades', payload),
-    futuresIncomeHistory: payload => futuresPrivCall('/v1/income', payload)
+    futuresIncomeHistory: payload => futuresPrivCall('/v1/income', payload),
+    futuresGetUserDataStream: () => privCall('/v1/listenKey', null, 'POST', true),
+    futuresKeepUserDataStream: payload => privCall('/v1/listenKey', payload, 'PUT', false, true),
+    futuresCloseUserDataStream: payload => privCall('/v1/listenKey', payload, 'DELETE', false, true)
   }
 }
 
