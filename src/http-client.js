@@ -114,7 +114,7 @@ const keyCall = ({ apiKey, pubCall }) => (path, data, method = 'GET') => {
  * @param {object} headers
  * @returns {object} The api response
  */
-const privateCall = ({ apiKey, apiSecret, base, apiBase, getTime = defaultGetTime, pubCall }) => (
+const privateCall = ({ apiKey, apiSecret, base, apiPathBase, getTime = defaultGetTime, pubCall }) => (
   path,
   data = {},
   method = 'GET',
@@ -142,7 +142,7 @@ const privateCall = ({ apiKey, apiSecret, base, apiBase, getTime = defaultGetTim
 
     return sendResult(
       fetch(
-        `${base}${(path.includes('/wapi') || path.includes('/sapi')) ? '' : `/${apiBase}`}${path}${noData
+        `${base}${(path.includes('/wapi') || path.includes('/sapi')) ? '' : `/${apiPathBase}`}${path}${noData
           ? ''
           : makeQueryString(newData)}`,
         {
@@ -274,7 +274,7 @@ export default opts => {
   const privCall = privateCall({ ...opts, base, pubCall })
   const kCall = keyCall({ ...opts, pubCall })
   const futuresPubCall = publicCall({ ...opts, base: futureBase, apiPathBase: FUTURES_API_PATH_BASE });
-  const futuresPrivCall = privateCall({ ...opts, base: futureBase, pubCall });
+  const futuresPrivCall = privateCall({ ...opts, base: futureBase, apiPathBase: FUTURES_API_PATH_BASE, pubCall: futuresPubCall });
   const futuresKCall = keyCall({ ...opts, pubCall: futuresPubCall });
 
   return {
@@ -383,9 +383,9 @@ export default opts => {
     futuresPositionRisk: payload => futuresPrivCall('/v1/positionRisk', payload),
     futuresUserTrades: payload => checkParams('futuresUserTrades', payload, ['symbol']) && futuresPrivCall('/v1/userTrades', payload),
     futuresIncomeHistory: payload => futuresPrivCall('/v1/income', payload),
-    futuresGetUserDataStream: () => privCall('/v1/listenKey', null, 'POST', true),
-    futuresKeepUserDataStream: payload => privCall('/v1/listenKey', payload, 'PUT', false, true),
-    futuresCloseUserDataStream: payload => privCall('/v1/listenKey', payload, 'DELETE', false, true)
+    futuresGetUserDataStream: payload => futuresPrivCall('/v1/listenKey', payload, 'POST', true),
+    futuresKeepUserDataStream: payload => futuresPrivCall('/v1/listenKey', payload, 'PUT', false, true),
+    futuresCloseUserDataStream: payload => futuresPrivCall('/v1/listenKey', payload, 'DELETE', false, true)
   }
 }
 

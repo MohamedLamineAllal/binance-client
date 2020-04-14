@@ -389,6 +389,9 @@ declare module 'binance-client' {
         futuresPositionRisk: (payload: { recvWindow?: number }) => Promise<FPositionRisk[]>;
         futuresUserTrades: (payload: { symbol: string, startTime?: number, endTime?: number, fromId?: number, limit?: number, recvWindow?: number }) => Promise<FUserTrade[]>;
         futuresIncomeHistory: (payload: { symbol?: string, incomeType?: FIncomeType, startTime?: number, endTime?: number, limit?: number, revWindow?: number }) => Promise<FIncome[]>;
+        futuresGetUserDataStream: (payload: {recvWindow?: number}) => Promise<{ listenKey: string}>;
+        futuresKeepUserDataStream: (payload: {recvWindow?: number}) => Promise<{}>;
+        futuresCloseUserDataStream: (payload: {recvWindow?: number}) => Promise<{}>;
     }
 
     export interface HttpError extends Error {
