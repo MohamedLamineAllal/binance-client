@@ -442,37 +442,40 @@ const depth = (payload, cb) => {
 
 const userTransforms = {
   // ACCOUNT_UPDATE: TODO:
-  ORDER_TRADE_UPDATE: m => ({
-    eventType: 'ORDER_TRADE_UPDATE',
-    eventTime: m.E,
-    transactTime: m.T,
-    order: {
-      symbol: m.s,
-      clientOrderId: m.c,
-      side: m.S,
-      type: m.o,
-      timeInForce: m.f,
-      origQty: m.q,
-      origPrice: m.p,
-      avgPrice: m.ap,
-      stopPrice: m.sp,
-      execType: m.x,
-      status: m.X,
-      orderId: m.i,
-      lastFilledQty: m.l,
-      filledAccumulatedQty: m.z,
-      lastFilledPrice: m.L,
-      commissionAsset: m.N,
-      commission: m.n,
-      tradeTime: m.T,
-      tradeId: m.t,
-      bidNational: m.b,
-      askNational: m.a,
-      isMaker: m.m,
-      isReduceOnly: m.R,
-      stopPriceType: m.wt 
+  ORDER_TRADE_UPDATE: m => {
+    const o = m.o;
+    return {
+      eventType: 'ORDER_TRADE_UPDATE',
+      eventTime: m.E,
+      transactTime: m.T,
+      order: {
+        symbol: o.s,
+        clientOrderId: o.c,
+        side: o.S,
+        type: o.o,
+        timeInForce: o.f,
+        origQty: o.q,
+        origPrice: o.p,
+        avgPrice: o.ap,
+        stopPrice: o.sp,
+        execType: o.x,
+        status: o.X,
+        orderId: o.i,
+        lastFilledQty: o.l,
+        filledAccumulatedQty: o.z,
+        lastFilledPrice: o.L,
+        commissionAsset: o.N,
+        commission: o.n,
+        tradeTime: o.T,
+        tradeId: o.t,
+        bidNational: o.b,
+        askNational: o.a,
+        isMaker: o.m,
+        isReduceOnly: o.R,
+        stopPriceType: o.wt
+      } 
     }
-  })
+  }
 }
 
 export const userEventHandler = cb => msg => {
@@ -533,7 +536,7 @@ const user = opts => cb => {
   const makeStream = isReconnecting => {
     return futuresGetUserDataStream()
       .then(({ listenKey }) => {
-        w = openWebSocket(`${BASE}/${listenKey}`)
+        w = openWebSocket(`${BASE}/ws/${listenKey}`)
         w.onmessage = msg => handleEvent(msg)
 
         currentListenKey = listenKey
