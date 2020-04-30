@@ -506,7 +506,7 @@ const user = opts => cb => {
   const keepAlive = isReconnecting => {
     if (currentListenKey) {
       clearInterval(int)
-      futuresKeepUserDataStream({}).catch(() => {
+      futuresKeepUserDataStream().catch(() => {
         closeStream({}, true)
 
         if (isReconnecting) {
@@ -541,10 +541,10 @@ const user = opts => cb => {
 
         currentListenKey = listenKey
 
-        int = setInterval(() => keepAlive(false), 50e3)
+        if (!int) {
+          int = setInterval(() => keepAlive(false), 55 * 60 * 50e3)
+        }
         // TODO: think about using only listenKeyExpired
-
-        keepAlive(true)
 
         return options => closeStream(options)
       })
