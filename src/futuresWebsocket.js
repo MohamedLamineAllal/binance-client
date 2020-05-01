@@ -484,6 +484,12 @@ export const userEventHandler = cb => msg => {
 }
 
 const user = opts => cb => {
+  let recvWindow;
+  if (arguments.length === 2) {
+    recvWindow = arguments[0].recvWindow
+    cb = arguments[1]
+  }
+
   const {
     futuresGetUserDataStream,
     futuresKeepUserDataStream,
@@ -503,10 +509,17 @@ const user = opts => cb => {
     cb(userTransforms[type] ? userTransforms[type](rest) : { type, ...rest })
   }
 
+  const _futuresKeepUserDataStream = () => {
+    if (recvWindow) {
+      return futuresKeepUserDataStream({ recvWindow })
+    }
+    return futuresKeepUserDataStream()
+  }
+
   const keepAlive = isReconnecting => {
     if (currentListenKey) {
       clearInterval(int)
-      futuresKeepUserDataStream().catch(() => {
+      _futuresKeepUserDataStream().catch(() => {
         closeStream({}, true)
 
         if (isReconnecting) {
@@ -518,11 +531,18 @@ const user = opts => cb => {
     }
   }
 
+  const _futuresCloseUserDataStream = () => {
+    if (recvWindow) {
+      return futuresCloseUserDataStream({ recvWindow })
+    }
+    return futuresCloseUserDataStream()
+  }
+
   const closeStream = (options, catchErrors) => {
     if (currentListenKey) {
       clearInterval(int)
 
-      const p = futuresCloseUserDataStream()
+      const p = _futuresCloseUserDataStream()
 
       if (catchErrors) {
         p.catch(f => f)
@@ -533,8 +553,15 @@ const user = opts => cb => {
     }
   }
 
+  const _futuresGetUserDataStream = () => {
+    if (recvWindow) {
+      return futuresGetUserDataStream({ recvWindow })
+    }
+    return futuresGetUserDataStream();
+  }
+
   const makeStream = isReconnecting => {
-    return futuresGetUserDataStream()
+    return _futuresGetUserDataStream()
       .then(({ listenKey }) => {
         w = openWebSocket(`${BASE}/ws/${listenKey}`)
         w.onmessage = msg => handleEvent(msg)
