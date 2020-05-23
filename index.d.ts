@@ -1210,6 +1210,7 @@ declare module 'binance-client' {
         closeTime: number;
         quoteVolume: string;
         trades: number;
+        quoteAssetVolume: string;
         buyBaseAssetVolume: string;
         buyQuoteAssetVolume: string;
     }
