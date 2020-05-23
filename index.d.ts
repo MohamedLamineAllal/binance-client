@@ -357,7 +357,7 @@ declare module 'binance-client' {
         futuresTrades: (payload: { symbol: string, limit?: number }) => Promise<FTrade[]>;
         futuresTradesHistory: (payload: { symbol: string, limit?: number, fromId?: number }) => Promise<FTrade[]>;
         futuresAggTrades: (payload: { symbol: string, fromId?: string, startTime?: number, endTime?: number, limit?: number }) => Promise<FAggregatedTrade[]>;
-        futuresCandles: (payload: FCandlesOptions) => Promise<FCandleChartResult>;
+        futuresCandles: (payload: FCandlesOptions) => Promise<FCandleChartResult[]>;
         // ______________ futures exclusive
         futuresMarkPrice: (payload: { symbol?: string }) => Promise<FMarkPrice>;
         futuresFundingRate: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number }) => Promise<FFundingRate>;
