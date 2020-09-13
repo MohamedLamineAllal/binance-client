@@ -488,6 +488,31 @@ declare module 'binance-client' {
         limit: number;
     }
 
+    export interface FExchangeFilter {
+        filterType: FFilterType,
+        // ________ PRICE_FILTER
+        minPrice?: number,
+        maxPrice?: number,
+        tickSize?: number,
+        // ________ LOT_SIZE, MARKET_LOT_SIZE
+        minQty?: number,
+        maxQty?: number,
+        stepSize?: number,
+        // ________ MAX_NUM_ORDERS
+        limit?: number,
+        // ________ PERCENT_PRICE
+        multiplierUp?: number,
+        multiplierDown?: number,
+        multiplierDecimal?: number
+    }
+
+    export type FFilterType =
+        | 'PRICE_FILTER'
+        | 'LOT_SIZE'
+        | 'MARKET_LOT_SIZE'
+        | 'MAX_NUM_ORDERS'
+        | 'PERCENT_PRICE';
+
     export type SymbolFilterType =
         | 'PRICE_FILTER'
         | 'PERCENT_PRICE'
@@ -873,7 +898,14 @@ declare module 'binance-client' {
         | 'REJECTED'
         | 'TRADE'
         | 'EXPIRED';
-
+    export type FExecutionType =
+        | 'NEW'
+        | 'PARTIAL_FILL'
+        | 'FILL'
+        | 'CANCELED'
+        | 'CALCULATED' //  Liquidation Execution
+        | 'EXPIRED'
+        | 'TRADE';
     export type EventType =
         | 'executionReport'
         | 'account';
@@ -1062,7 +1094,7 @@ declare module 'binance-client' {
         [key: string]: {
             available: string;
             locked: string;
-        };
+        }
     }
 
     interface OutboundAccountInfo extends Message {
@@ -1074,7 +1106,7 @@ declare module 'binance-client' {
         canTrade: boolean;
         canWithdraw: boolean;
         canDeposit: boolean;
-        lastAccountUpdate: number;ExecutionReport
+        lastAccountUpdate: number;
     }
 
     interface ExecutionReport extends Message {
@@ -1198,7 +1230,7 @@ declare module 'binance-client' {
         limit?: number;
         startTime?: number;
         endTime?: number;
-    };
+    }
 
     export interface CandleChartResult {
         openTime: number;
@@ -1240,7 +1272,7 @@ declare module 'binance-client' {
         quantity: string;
         tradeTime: number;
         isBuyerMaker: boolean;
-    }; 
+    }
 
     interface WsAggregatedTrade {
         eventType: string;
