@@ -1,4 +1,5 @@
 // tslint:disable:interface-name
+import { Agent } from 'http';
 declare module 'binance-client' {
     export default function (options?: { apiKey: string; apiSecret: string, getTime?: () => number | Promise<number> }): Binance;
 
@@ -320,78 +321,78 @@ declare module 'binance-client' {
 
     export interface Binance {
         // ________________________________________ Binance
-        accountInfo(options?: { useServerTime: boolean }): Promise<Account>;
-        tradeFee(): Promise<TradeFeeResult>;
-        trades(options: { symbol: string, limit?: number }): Promise<Trade[]>;
-        aggTrades(options?: { symbol: string, fromId?: string, startTime?: number, endTime?: number, limit?: number }): Promise<AggregatedTrade[]>;
-        allBookTickers(): Promise<{ [key: string]: Ticker }>;
-        book(options: { symbol: string, limit?: number }): Promise<OrderBook>;
-        exchangeInfo(): Promise<ExchangeInfo>;
-        order(options: NewOrder): Promise<Order>;
-        orderTest(options: NewOrder): Promise<Order>;
-        ping(): Promise<boolean>;
-        prices(): Promise<{ [index: string]: string }>;
-        avgPrice(options?: { symbol: string }): Promise<AvgPriceResult | AvgPriceResult[]>;
-        time(): Promise<number>;
+        accountInfo(options?: { useServerTime: boolean }, agent?: Agent): Promise<Account>;
+        tradeFee(agent?: Agent): Promise<TradeFeeResult>;
+        trades(options: { symbol: string, limit?: number }, agent?: Agent): Promise<Trade[]>;
+        aggTrades(options?: { symbol: string, fromId?: string, startTime?: number, endTime?: number, limit?: number }, agent?: Agent): Promise<AggregatedTrade[]>;
+        allBookTickers(agent?: Agent): Promise<{ [key: string]: Ticker }>;
+        book(options: { symbol: string, limit?: number }, agent?: Agent): Promise<OrderBook>;
+        exchangeInfo(agent?: Agent): Promise<ExchangeInfo>;
+        order(options: NewOrder, agent?: Agent): Promise<Order>;
+        orderTest(options: NewOrder, agent?: Agent): Promise<Order>;
+        ping(agent?: Agent): Promise<boolean>;
+        prices(agent?: Agent): Promise<{ [index: string]: string }>;
+        avgPrice(options?: { symbol: string }, agent?: Agent): Promise<AvgPriceResult | AvgPriceResult[]>;
+        time(agent?: Agent): Promise<number>;
         ws: WebSocket;
         fws: FuturesWebSocket;
-        myTrades(options: { symbol: string, limit?: number, fromId?: number, useServerTime?: boolean }): Promise<MyTrade[]>;
-        getOrder(options: { symbol: string, orderId: number, origClientOrderId?: string, recvWindow?: number, useServerTime?: boolean }): Promise<QueryOrderResult>;
-        cancelOrder(options: { symbol: string; orderId: number, origClientOrderId?: string, newClientOrderId?: string, recvWindow?: number, useServerTime?: boolean }): Promise<CancelOrderResult>;
-        openOrders(options: { symbol?: string, recvWindow?: number, useServerTime?: boolean }): Promise<QueryOrderResult[]>;
-        allOrders(options: { symbol?: string, orderId?: number, limit?: number, recvWindow?: number, useServerTime?: boolean }): Promise<QueryOrderResult[]>;
-        dailyStats(options?: { symbol: string }): Promise<DailyStatsResult | DailyStatsResult[]>;
-        candles(options: CandlesOptions): Promise<CandleChartResult[]>;
-        tradesHistory(options: { symbol: string, limit?: number, fromId?: number }): Promise<Trade[]>;
-        depositAddress(options: { asset: string }): Promise<DepositAddress>;
-        withdraw(options: { asset: string, address: string, amount: number; name?: string }): Promise<WithrawResponse>;
-        assetDetail(): Promise<AssetDetail>;
-        withdrawHistory(options: { asset: string, status?: number, startTime?: number, endTime?: number }): Promise<WithdrawHistoryResponse>;
-        depositHistory(options: { asset: string, status?: number, startTime?: number, endTime?: number }): Promise<DepositHistoryResponse>;
+        myTrades(options: { symbol: string, limit?: number, fromId?: number, useServerTime?: boolean }, agent?: Agent): Promise<MyTrade[]>;
+        getOrder(options: { symbol: string, orderId: number, origClientOrderId?: string, recvWindow?: number, useServerTime?: boolean }, agent?: Agent): Promise<QueryOrderResult>;
+        cancelOrder(options: { symbol: string; orderId: number, origClientOrderId?: string, newClientOrderId?: string, recvWindow?: number, useServerTime?: boolean }, agent?: Agent): Promise<CancelOrderResult>;
+        openOrders(options: { symbol?: string, recvWindow?: number, useServerTime?: boolean }, agent?: Agent): Promise<QueryOrderResult[]>;
+        allOrders(options: { symbol?: string, orderId?: number, limit?: number, recvWindow?: number, useServerTime?: boolean }, agent?: Agent): Promise<QueryOrderResult[]>;
+        dailyStats(options?: { symbol: string }, agent?: Agent): Promise<DailyStatsResult | DailyStatsResult[]>;
+        candles(options: CandlesOptions, agent?: Agent): Promise<CandleChartResult[]>;
+        tradesHistory(options: { symbol: string, limit?: number, fromId?: number }, agent?: Agent): Promise<Trade[]>;
+        depositAddress(options: { asset: string }, agent?: Agent): Promise<DepositAddress>;
+        withdraw(options: { asset: string, address: string, amount: number; name?: string }, agent?: Agent): Promise<WithrawResponse>;
+        assetDetail(agent?: Agent): Promise<AssetDetail>;
+        withdrawHistory(options: { asset: string, status?: number, startTime?: number, endTime?: number }, agent?: Agent): Promise<WithdrawHistoryResponse>;
+        depositHistory(options: { asset: string, status?: number, startTime?: number, endTime?: number }, agent?: Agent): Promise<DepositHistoryResponse>;
 
         // _____________________________________ Binance futures
-        futuresPing: () => Promise<true>;
-        futuresTime: () => Promise<number>;
-        futuresExchangeInfo: () => Promise<FExchangeInfo>;
-        futuresBook: (payload: { symbol: string, limit?: number }) => Promise<FOrderBook>;
-        futuresTrades: (payload: { symbol: string, limit?: number }) => Promise<FTrade[]>;
-        futuresTradesHistory: (payload: { symbol: string, limit?: number, fromId?: number }) => Promise<FTrade[]>;
-        futuresAggTrades: (payload: { symbol: string, fromId?: string, startTime?: number, endTime?: number, limit?: number }) => Promise<FAggregatedTrade[]>;
-        futuresCandles: (payload: FCandlesOptions) => Promise<FCandleChartResult[]>;
+        futuresPing: (agent?: Agent) => Promise<true>;
+        futuresTime: (agent?: Agent) => Promise<number>;
+        futuresExchangeInfo: (agent?: Agent) => Promise<FExchangeInfo>;
+        futuresBook: (payload: { symbol: string, limit?: number }, agent?: Agent) => Promise<FOrderBook>;
+        futuresTrades: (payload: { symbol: string, limit?: number }, agent?: Agent) => Promise<FTrade[]>;
+        futuresTradesHistory: (payload: { symbol: string, limit?: number, fromId?: number }, agent?: Agent) => Promise<FTrade[]>;
+        futuresAggTrades: (payload: { symbol: string, fromId?: string, startTime?: number, endTime?: number, limit?: number }, agent?: Agent) => Promise<FAggregatedTrade[]>;
+        futuresCandles: (payload: FCandlesOptions, agent?: Agent) => Promise<FCandleChartResult[]>;
         // ______________ futures exclusive
-        futuresMarkPrice: (payload: { symbol?: string }) => Promise<FMarkPrice>;
-        futuresFundingRate: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number }) => Promise<FFundingRate>;
-        futuresDailyStats: (payload: { symbol?: string }) => Promise<FDailyState>;
-        futuresPrice: (payload: { symbol?: string, reduce?: boolean }) => Promise<FPrice | FPrice[] | FReducedPrice>;
+        futuresMarkPrice: (payload: { symbol?: string }, agent?: Agent) => Promise<FMarkPrice>;
+        futuresFundingRate: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number }, agent?: Agent) => Promise<FFundingRate>;
+        futuresDailyStats: (payload: { symbol?: string }, agent?: Agent) => Promise<FDailyState>;
+        futuresPrice: (payload: { symbol?: string, reduce?: boolean }, agent?: Agent) => Promise<FPrice | FPrice[] | FReducedPrice>;
         // TODO: Verify that adding reduce to the payload doesn't pose a problem
         // futuresAvgPrice: (payload: { symbol?: string }) => Promise<FMarkPrice>;
-        futuresBookTicker: (payload: { symbol?: string, reduce?: boolean }) => Promise<FBookTicker | FBookTicker[] | FReducedBookTicker>;
-        futuresAllForceOrders: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number }) => Promise<FForceOrder | FForceOrder[]>;
-        futuresOpenInterest: (payload: { symbol: string }) => Promise<FOpenInterest>;
-        futuresLeverageBracket: (payload: { symbol?: string }) => Promise<FLeverageBrackets | FLeverageBrackets[] | FReducedLeverageBrackets>;
-        futuresAccountTransfer: (payload: { asset: string, amount: number, type: number, recvWindow?: number }) => Promise<FAccountTransfer>;
-        futuresAccountTransactionHistory: (payload: { asset: string, startTime: number, endTime?: number, current?: number, size?: number, recvWindow?: number }) => Promise<FAccountTransferHistory>;
-        futuresOrder: (payload: FNewOrder) => Promise<FOrder>;
-        futuresOrderTest: (payload: { symbol?: string }) => Promise<FMarkPrice>;
-        futuresGetOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow?: number }) => Promise<FOrderState>;
-        futuresCancelOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow?: number }) => Promise<FOrder>;
-        futuresCancelAllOpenOrders: (payload: { symbol: string, recvWindow?: number }) => Promise<FCancelAllOrderResp>;
-        futuresCancelMultipleOrders: (payload: { symbol: string, orderIdList?: number[], origClientOrderIdList?: number[], recvWindow?: number }) => Promise<(FOrder | FCancelAllOrderResp)[]>;
-        futuresGetOpenOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow?: number}) => Promise<FOrderState>;
-        futuresGetAllOpenOrders: (payload: { symbol: string, recvWindow?: number }) => Promise<FOrderState[]>;
-        futuresGetAllOrders: (payload: { symbol: string, orderId?: number, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }) => Promise<FOrderState[]>;
-        futuresAccountBalance: (payload: { recvWindow?: number }) => Promise<FAccountBalance[]>;
-        futuresAccountInfo: (payload: { recvWindow?: number }) => Promise<FAccountInfo>;
-        futuresChangeLeverage: (payload: { symbol: string, leverage: number, recvWindow?: number }) => Promise<FLeverageChangeResp>;
-        futuresChangeMarginType: (payload: { symbol: string, marginType: FMarginType, recvWindow?: number }) => Promise<CodeMsgResp>;
-        futuresModifyPositionMargin: (payload: { symbol: string, amount: number, type: number, recvWindow?: number }) => Promise<FModifyPositionMarginResp>;
-        futuresPositionMarginHistory: (payload: { symbol: string, type?: number, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }) => Promise<FPositionMargin[]>;
-        futuresPositionRisk: (payload: { recvWindow?: number }) => Promise<FPositionRisk[]>;
-        futuresUserTrades: (payload: { symbol: string, startTime?: number, endTime?: number, fromId?: number, limit?: number, recvWindow?: number }) => Promise<FUserTrade[]>;
-        futuresIncomeHistory: (payload: { symbol?: string, incomeType?: FIncomeType, startTime?: number, endTime?: number, limit?: number, revWindow?: number }) => Promise<FIncome[]>;
-        futuresGetUserDataStream: (payload: {recvWindow?: number}) => Promise<{ listenKey: string}>;
-        futuresKeepUserDataStream: (payload: {recvWindow?: number}) => Promise<{}>;
-        futuresCloseUserDataStream: (payload: {recvWindow?: number}) => Promise<{}>;
+        futuresBookTicker: (payload: { symbol?: string, reduce?: boolean }, agent?: Agent) => Promise<FBookTicker | FBookTicker[] | FReducedBookTicker>;
+        futuresAllForceOrders: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number }, agent?: Agent) => Promise<FForceOrder | FForceOrder[]>;
+        futuresOpenInterest: (payload: { symbol: string }, agent?: Agent) => Promise<FOpenInterest>;
+        futuresLeverageBracket: (payload: { symbol?: string }, agent?: Agent) => Promise<FLeverageBrackets | FLeverageBrackets[] | FReducedLeverageBrackets>;
+        futuresAccountTransfer: (payload: { asset: string, amount: number, type: number, recvWindow?: number }, agent?: Agent) => Promise<FAccountTransfer>;
+        futuresAccountTransactionHistory: (payload: { asset: string, startTime: number, endTime?: number, current?: number, size?: number, recvWindow?: number }, agent?: Agent) => Promise<FAccountTransferHistory>;
+        futuresOrder: (payload: FNewOrder, agent?: Agent) => Promise<FOrder>;
+        futuresOrderTest: (payload: { symbol?: string }, agent?: Agent) => Promise<FMarkPrice>;
+        futuresGetOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow?: number }, agent?: Agent) => Promise<FOrderState>;
+        futuresCancelOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow?: number }, agent?: Agent) => Promise<FOrder>;
+        futuresCancelAllOpenOrders: (payload: { symbol: string, recvWindow?: number }, agent?: Agent) => Promise<FCancelAllOrderResp>;
+        futuresCancelMultipleOrders: (payload: { symbol: string, orderIdList?: number[], origClientOrderIdList?: number[], recvWindow?: number }, agent?: Agent) => Promise<(FOrder | FCancelAllOrderResp)[]>;
+        futuresGetOpenOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow?: number}, agent?: Agent) => Promise<FOrderState>;
+        futuresGetAllOpenOrders: (payload: { symbol: string, recvWindow?: number }, agent?: Agent) => Promise<FOrderState[]>;
+        futuresGetAllOrders: (payload: { symbol: string, orderId?: number, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FOrderState[]>;
+        futuresAccountBalance: (payload: { recvWindow?: number }, agent?: Agent) => Promise<FAccountBalance[]>;
+        futuresAccountInfo: (payload: { recvWindow?: number }, agent?: Agent) => Promise<FAccountInfo>;
+        futuresChangeLeverage: (payload: { symbol: string, leverage: number, recvWindow?: number }, agent?: Agent) => Promise<FLeverageChangeResp>;
+        futuresChangeMarginType: (payload: { symbol: string, marginType: FMarginType, recvWindow?: number }, agent?: Agent) => Promise<CodeMsgResp>;
+        futuresModifyPositionMargin: (payload: { symbol: string, amount: number, type: number, recvWindow?: number }, agent?: Agent) => Promise<FModifyPositionMarginResp>;
+        futuresPositionMarginHistory: (payload: { symbol: string, type?: number, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FPositionMargin[]>;
+        futuresPositionRisk: (payload: { recvWindow?: number }, agent?: Agent) => Promise<FPositionRisk[]>;
+        futuresUserTrades: (payload: { symbol: string, startTime?: number, endTime?: number, fromId?: number, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FUserTrade[]>;
+        futuresIncomeHistory: (payload: { symbol?: string, incomeType?: FIncomeType, startTime?: number, endTime?: number, limit?: number, revWindow?: number }, agent?: Agent) => Promise<FIncome[]>;
+        futuresGetUserDataStream: (payload: {recvWindow?: number}, agent?: Agent) => Promise<{ listenKey: string}>;
+        futuresKeepUserDataStream: (payload: {recvWindow?: number}, agent?: Agent) => Promise<{}>;
+        futuresCloseUserDataStream: (payload: {recvWindow?: number}, agent?: Agent) => Promise<{}>;
     }
 
     export interface HttpError extends Error {

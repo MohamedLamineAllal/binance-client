@@ -2,7 +2,7 @@ import http from 'http';
 
 export const checkFields = (t, object, fields) => {
   fields.forEach(field => {
-    t.truthy(object[field])
+    t.truthy(object[field] !== undefined)
   })
 }
 

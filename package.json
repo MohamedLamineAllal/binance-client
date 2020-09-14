@@ -12,10 +12,11 @@
   "scripts": {
     "build": "rimraf dist && babel src -d dist",
     "prepare": "npm run build",
-    "test": "ava --timeout=10s",
+    "test": "ava --timeout=10000s",
     "cover": "nyc ava",
     "report": "npm run cover && nyc report --reporter=text-lcov | coveralls",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "launchProxy": "node test/proxyTest/startProxy.js"
   },
   "dependencies": {
     "html5-websocket": "^2.0.2",
@@ -36,6 +37,7 @@
     "eslint": "^4.9.0",
     "eslint-config-prettier": "^2.6.0",
     "eslint-config-zavatta": "^6.0.1",
+    "https-proxy-agent": "^5.0.0",
     "nyc": "^11.2.1",
     "prettier": "^1.7.4",
     "rimraf": "^2.6.2"
@@ -46,7 +48,8 @@
       "babel-polyfill"
     ],
     "files": [
-      "test/index.js"
+      
+      "test/proxyTest/index.js"
     ],
     "babel": "inherit"
   },

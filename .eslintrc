@@ -2,6 +2,8 @@
   "extends": ["zavatta", "prettier"],
   "rules": {
     "no-inline-comments": "off",
-    "id-length": "off"
+    "id-length": "off",
+    "no-console": "off",
+    "max-nested-callbacks": "off"
   }
 }

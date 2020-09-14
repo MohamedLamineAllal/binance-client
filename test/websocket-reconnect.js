@@ -11,6 +11,7 @@ server.on('connection', ws => {
 })
 
 test.after.always('cleanup', () => {
+  console.log('CLEAN UP >>>>');
   return new Promise(resolve => {
     server.close(() => {
       resolve()
@@ -24,11 +25,14 @@ test('[WS] reconnect', t => {
     const url = () => `ws://localhost:${TEST_SERVER_PORT}`
     const ws = openWebSocket(url)
     ws.onopen = () => {
+      console.log('on open ::::>');
       if (isReconnect) {
+        console.log('passe >>>>>>');
         ws.close(1000, undefined, { keepClosed: true })
         t.pass()
         resolve()
       } else {
+        console.log('not reconnecting')
         ws.close(1000)
       }
       isReconnect = true

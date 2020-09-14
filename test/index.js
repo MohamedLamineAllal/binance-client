@@ -60,7 +60,7 @@ test('[REST] candles', async t => {
     t.is(e.message, 'Method candles requires symbol parameter.')
   }
 
-  const candles = await client.candles({ symbol: 'ETHBTC' })
+  const candles = await client.candles({ symbol: 'ETHBTC', interval: '15m' })
 
   t.truthy(candles.length)
 
@@ -220,14 +220,34 @@ test('[WS] allTicker', t => {
 
 test('[WS] candles', t => {
   try {
-    client.ws.candles('ETHBTC', d => d)
+    client.ws.candles('ETHBTC',  d => d)
   } catch (e) {
     t.is(e.message, 'Please pass a symbol, interval and callback.')
   }
 
   return new Promise(resolve => {
     client.ws.candles(['ETHBTC', 'BNBBTC', 'BNTBTC'], '5m', candle => {
-      checkFields(t, candle, ['open', 'high', 'low', 'close', 'volume', 'trades', 'quoteVolume'])
+      console.log(candle);
+      checkFields(t, candle, [
+        'eventType',
+        'eventTime',
+        'symbol',
+        'startTime',
+        'closeTime',
+        'firstTradeId',
+        'lastTradeId',
+        'open',
+        'high',
+        'low',
+        'close',
+        'volume',
+        'trades',
+        'interval',
+        'isFinal',
+        'quoteAssetVolume',
+        'buyAssetVolume',
+        'quoteBuyAssetVolume'
+      ])
       resolve()
     })
   })
@@ -452,7 +472,10 @@ test('[WS] userEvents', t => {
 })
 
 if (process.env.API_KEY) {
+  console.log('API _ KEY HERE :::>')
   require('./authenticated')
 }
 
 require('./websocket-reconnect')
+
+// TODO: Test Binance futures

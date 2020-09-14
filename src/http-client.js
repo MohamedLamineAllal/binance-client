@@ -78,12 +78,19 @@ const checkParams = (name, payload, requires = []) => {
  * @param {object} headers
  * @returns {object} The api response
  */
-const publicCall = ({ base, apiPathBase }) => (path, data, method = 'GET', headers = {}) =>
+const publicCall = ({ base, apiPathBase }) => ({
+  path,
+  data,
+  method = 'GET',
+  headers = {},
+  agent
+}) =>
   sendResult(
     fetch(`${base}/${apiPathBase}${path}${makeQueryString(data)}`, {
       method,
       json: true,
       headers,
+      agent
     }),
   )
 
@@ -93,15 +100,27 @@ const publicCall = ({ base, apiPathBase }) => (path, data, method = 'GET', heade
  * @param {string} path Endpoint path
  * @param {object} data The payload to be sent
  * @param {string} method HTTB VERB, GET by default
+ * @param {http.Agent} object http Agent object (can be used to setup proxy use) 
  * @returns {object} The api response
  */
-const keyCall = ({ apiKey, pubCall }) => (path, data, method = 'GET') => {
+const keyCall = ({ apiKey, pubCall }) => ({
+  path,
+  data,
+  method = 'GET',
+  agent
+}) => {
   if (!apiKey) {
     throw new Error('You need to pass an API key to make this call.')
   }
 
-  return pubCall(path, data, method, {
-    'X-MBX-APIKEY': apiKey,
+  return pubCall({
+    path,
+    data,
+    method,
+    headers: {
+      'X-MBX-APIKEY': apiKey,
+    },
+    agent
   })
 }
 
@@ -114,19 +133,20 @@ const keyCall = ({ apiKey, pubCall }) => (path, data, method = 'GET') => {
  * @param {object} headers
  * @returns {object} The api response
  */
-const privateCall = ({ apiKey, apiSecret, base, apiPathBase, getTime = defaultGetTime, pubCall }) => (
-  path,
-  data = {},
-  method = 'GET',
-  noData,
-  noExtra,
-) => {
+const privateCall = ({ apiKey, apiSecret, base, apiPathBase, getTime = defaultGetTime, pubCall }) => ({
+    path,
+    data = {},
+    method = 'GET',
+    noData,
+    noExtra,
+    agent
+}) => {
   if (!apiKey || !apiSecret) {
     throw new Error('You need to pass an API key and secret to make authenticated calls.')
   }
 
   return (data && data.useServerTime
-    ? pubCall('/v1/time').then(r => r.serverTime)
+    ? pubCall({ path: '/v1/time', agent }).then(r => r.serverTime)
     : Promise.resolve(getTime())
   ).then(timestamp => {
     if (data) {
@@ -149,6 +169,7 @@ const privateCall = ({ apiKey, apiSecret, base, apiPathBase, getTime = defaultGe
           method,
           headers: { 'X-MBX-APIKEY': apiKey },
           json: true,
+          agent
         },
       ),
     )
@@ -192,34 +213,35 @@ export const candleFields = [
  * Get candles for a specific pair and interval and convert response
  * to a user friendly collection.
  */
-const candles = (pubCall, payload) =>
-  pubCall('/v1/klines', payload).then(candles =>
+const candles = (pubCall, payload, agent) =>
+  pubCall({ path: '/v1/klines', data: payload, agent }).then(candles =>
     candles.map(candle => zip(candleFields, candle)),
   )
 
 /**
  * Create a new order wrapper for market order simplicity
  */
-const order = (privCall, payload = {}, url) => {
+const order = (privCall, payload = {}, url, agent) => {
   const newPayload =
     (['LIMIT', 'STOP_LOSS_LIMIT', 'TAKE_PROFIT_LIMIT'].includes(payload.type) || !payload.type) // TODO: check
       ? { timeInForce: 'GTC', ...payload }
       : payload
-  return checkParams('order', newPayload, ['symbol', 'side', 'quantity']) && privCall(url, { type: 'LIMIT', ...newPayload }, 'POST') // TODO: check params
+  return checkParams('order', newPayload, ['symbol', 'side', 'quantity']) && privCall({
+    path: url, data: { type: 'LIMIT', ...newPayload }, method: 'POST', agent }) // TODO: check params
 }
 
 /**
  * Zip asks and bids response from order book
  */
-const book = (pubCall, payload) =>
-  pubCall('/v1/depth', payload).then(({ lastUpdateId, asks, bids }) => ({
+const book = (pubCall, payload, agent) =>
+  pubCall({ path: '/v1/depth', data: payload, agent }).then(({ lastUpdateId, asks, bids }) => ({
     lastUpdateId,
     asks: asks.map(a => zip(['price', 'quantity'], a)),
     bids: bids.map(b => zip(['price', 'quantity'], b)),
   }))
 
-const aggTrades = (pubCall, payload) =>
-  pubCall('/v1/aggTrades', payload).then(trades =>
+const aggTrades = (pubCall, payload, agent) =>
+  pubCall({ path: '/v1/aggTrades', data: payload, agent }).then(trades =>
     trades.map(trade => ({
       aggId: trade.a,
       price: trade.p,
@@ -237,7 +259,7 @@ const futuresCandles = candles;
 /**
  * Create a new order wrapper for market order simplicity
  */
-const futuresOrder = (privCall, payload = {}, url) => {
+const futuresOrder = (privCall, payload = {}, url, agent) => {
   const newPayload =
     (['LIMIT', 'STOP', 'TAKE_PROFIT'].includes(payload.type) || !payload.type) // TODO: TO CHECK
       ? { timeInForce: 'GTC', ...payload }
@@ -259,12 +281,11 @@ const futuresOrder = (privCall, payload = {}, url) => {
       ...((payload.type && ['STOP', 'TAKE_PROFIT'].includes(payload.type) && ['price', 'stopPrice']) || []),
       ...((payload.type && ['STOP_MARKET', 'TAKE_PROFIT_MARKET'].includes(payload.type) && ['stopPrice']) || []),
     ]) &&
-    privCall(url, newPayload, 'POST')
+    privCall({ path: url, data: newPayload, method: 'POST', agent })
   )
 }
 const futuresBook = book;
 const futuresAggTrades = aggTrades;
-
 
 
 export default opts => {
@@ -279,66 +300,73 @@ export default opts => {
 
   return {
     // _______________________________________ normal binance api
-    ping: () => pubCall('/v1/ping').then(() => true),
-    time: () => pubCall('/v1/time').then(r => r.serverTime),
-    exchangeInfo: () => pubCall('/v1/exchangeInfo'),
-    book: payload => checkParams('book', payload, ['symbol']) && book(pubCall, payload),
-    trades: (payload) => checkParams('trades', payload, ['symbol']) && pubCall('/v1/trades', payload).then(
+    ping: (agent) => pubCall({ path: '/v1/ping', agent }).then(() => true),
+    time: (agent) => pubCall({ path: '/v1/time', agent }).then(r => r.serverTime),
+    exchangeInfo: (agent) => pubCall({ path: '/v1/exchangeInfo', agent }),
+    book: (payload, agent) => checkParams('book', payload, ['symbol']) && book(pubCall, payload, agent),
+    trades: (payload, agent) => checkParams('trades', payload, ['symbol']) && pubCall({ path: '/v1/trades', data: payload,  agent }).then(
       trades => renameProps(trades, { qty: 'quantity'})
     ),
-    tradesHistory: (payload) => checkParams('tradesHistory', payload, ['symbol']) && kCall('/v1/historicalTrades', payload).then(
+    tradesHistory: (payload, agent) => checkParams('tradesHistory', payload, ['symbol']) && kCall({ path: '/v1/historicalTrades', data: payload, agent }).then(
       trades => renameProps(trades, { qty: 'quantity'})
     ),
-    aggTrades: payload => checkParams('aggTrades', payload, ['symbol']) && aggTrades(pubCall, payload),
-    candles: payload => checkParams('candles', payload, ['symbol', 'interval']) &&  candles(pubCall, payload),
-    dailyStats: payload => pubCall('/v1/ticker/24hr', payload),
-    prices: () =>
-      pubCall('/v1/ticker/allPrices').then(r =>
+    aggTrades: (payload, agent) => checkParams('aggTrades', payload, ['symbol']) && aggTrades(pubCall, payload, agent),
+    candles: (payload, agent) => checkParams('candles', payload, ['symbol', 'interval']) &&  candles(pubCall, payload, agent),
+    dailyStats: (payload, agent) => pubCall({ path: '/v1/ticker/24hr', data: payload, agent }),
+    prices: (agent) =>
+      pubCall({ path: '/v1/ticker/allPrices',  agent }).then(r =>
         r.reduce((out, cur) => ((out[cur.symbol] = cur.price), out), {}),
       ),
-    avgPrice: payload => pubCall('/v3/avgPrice', payload),
-    allBookTickers: () =>
-      pubCall('/v1/ticker/allBookTickers').then(r =>
+    avgPrice: (payload, agent) => pubCall({ path: '/v3/avgPrice', data: payload, agent }),
+    allBookTickers: (agent) =>
+      pubCall({ path: '/v1/ticker/allBookTickers', agent }).then(r =>
         r.reduce((out, cur) => ((out[cur.symbol] = cur), out), {}),
       ),
-    order: payload => order(privCall, payload, '/v3/order'),
-    orderTest: payload => order(privCall, payload, '/v3/order/test'),
-    getOrder: payload => privCall('/v3/order', payload),
-    cancelOrder: payload => privCall('/v3/order', payload, 'DELETE'),
-    openOrders: payload => privCall('/v3/openOrders', payload), // TODO: to check (cancel)
-    allOrders: payload => privCall('/v3/allOrders', payload),
-    accountInfo: payload => privCall('/v3/account', payload),
-    myTrades:  (payload) => privCall('/v3/myTrades', payload),
-    withdraw: payload => privCall('/wapi/v3/withdraw.html', payload, 'POST'),
-    withdrawHistory: payload => privCall('/wapi/v3/withdrawHistory.html', payload),
-    depositHistory: payload => privCall('/wapi/v3/depositHistory.html', payload),
-    depositAddress: payload => privCall('/wapi/v3/depositAddress.html', payload),
-    tradeFee: payload => privCall('/wapi/v3/tradeFee.html', payload).then(res => res.tradeFee),
-    assetDetail: payload => privCall('/wapi/v3/assetDetail.html', payload),
-    getDataStream: () => privCall('/v1/userDataStream', null, 'POST', true),
-    keepDataStream: payload => privCall('/v1/userDataStream', payload, 'PUT', false, true),
-    closeDataStream: payload => privCall('/v1/userDataStream', payload, 'DELETE', false, true),
+    order: (payload, agent) => order(privCall, payload, '/v3/order', agent),
+    orderTest: (payload, agent) => order(privCall, payload, '/v3/order/test', agent),
+    getOrder: (payload, agent) => privCall({
+      path: '/v3/order', data: payload, method: 'GET', agent }),
+    cancelOrder: (payload, agent) => privCall({
+      path: '/v3/order', data: payload, method: 'DELETE', agent }),
+    openOrders: (payload, agent) => privCall({
+      path: '/v3/openOrders', data: payload, method: 'GET', agent }), // TODO: to check (cancel)
+    allOrders: (payload, agent) => privCall({
+      path: '/v3/allOrders', data: payload, method: 'GET', agent }),
+    accountInfo: (payload, agent) => privCall({
+      path: '/v3/account', data: payload, method: 'GET', agent }),
+    myTrades:  (payload, agent) => privCall({
+      path: '/v3/myTrades', data: payload, method: 'GET', agent }),
+    withdraw: (payload, agent) => privCall({
+      path: '/wapi/v3/withdraw.html', data: payload, method: 'POST', agent }),
+    withdrawHistory: (payload, agent) => privCall({ path: '/wapi/v3/withdrawHistory.html', data: payload, method: 'GET', agent }),
+    depositHistory: (payload, agent) => privCall({ path: '/wapi/v3/depositHistory.html', data: payload, method: 'GET', agent }),
+    depositAddress: (payload, agent) => privCall({ path: '/wapi/v3/depositAddress.html', data: payload, method: 'GET', agent }),
+    tradeFee: (payload, agent) => privCall({ path: '/wapi/v3/tradeFee.html', data: payload, method: 'GET', agent }).then(res => res.tradeFee),
+    assetDetail: (payload, agent) => privCall({ path: '/wapi/v3/assetDetail.html', data: payload, method: 'GET', agent }),
+    getDataStream: (agent) => privCall({ path: '/v1/userDataStream', data: null, method: 'POST', noData: true, agent }),
+    keepDataStream: (payload, agent) => privCall({ path: '/v1/userDataStream', data: payload, method: 'PUT', noData: false, noExtraData: true, agent }),
+    closeDataStream: (payload, agent) => privCall({ path: '/v1/userDataStream', data: payload, method: 'DELETE', noData: false, noExtraData: true, agent }),
 
     // ______________________________________ futures binance api
 
-    futuresPing: () => futuresPubCall('/v1/ping').then(() => true),
-    futuresTime: () => futuresPubCall('/v1/time').then(r => r.serverTime),
-    futuresExchangeInfo: () => futuresPubCall('/v1/exchangeInfo'),
-    futuresBook: payload => checkParams('futuresBook', payload, ['symbol']) && futuresBook(futuresPubCall, payload),
-    futuresTrades: (payload) => checkParams('futuresTrades', payload, ['symbol']) && futuresPubCall('/v1/trades', payload).then(
+    futuresPing: (agent) => futuresPubCall({ path: '/v1/ping', agent }).then(() => true),
+    futuresTime: (agent) => futuresPubCall({ path: '/v1/time', agent }).then(r => r.serverTime),
+    futuresExchangeInfo: (agent) => futuresPubCall({ path: '/v1/exchangeInfo', agent }),
+    futuresBook: (payload, agent) => checkParams('futuresBook', payload, ['symbol']) && futuresBook(futuresPubCall, payload, agent),
+    futuresTrades: (payload, agent) => checkParams('futuresTrades', payload, ['symbol']) && futuresPubCall({ path: '/v1/trades', data: payload, agent }).then(
       trades => renameProps(trades, { qty: 'quantity'})
     ),
-    futuresTradesHistory: (payload) => checkParams('futuresTradesHistory', payload, ['symbol']) && futuresKCall('/v1/historicalTrades', payload).then(
+    futuresTradesHistory: (payload, agent) => checkParams('futuresTradesHistory', payload, ['symbol']) && futuresKCall({ path: '/v1/historicalTrades', data: payload, agent }).then(
       trades => renameProps(trades, { qty: 'quantity'})
     ),
-    futuresAggTrades: payload => checkParams('futuresAggTrades', payload, ['symbol']) && futuresAggTrades(futuresPubCall, payload),
-    futuresCandles: payload => checkParams('futuresCandles', payload, ['symbol', 'interval']) && futuresCandles(futuresPubCall, payload),
+    futuresAggTrades: (payload, agent) => checkParams('futuresAggTrades', payload, ['symbol']) && futuresAggTrades(futuresPubCall, payload, agent),
+    futuresCandles: (payload, agent) => checkParams('futuresCandles', payload, ['symbol', 'interval']) && futuresCandles(futuresPubCall, payload, agent),
     // ______________ futures exclusive
-    futuresMarkPrice: payload => futuresPubCall('/v1/premiumIndex', payload),
-    futuresFundingRate: payload => checkParams('futuresFundingRate', payload, ['symbol']) && futuresKCall('/v1/fundingRate', payload),
-    futuresDailyStats: payload => futuresPubCall('/v1/ticker/24hr', payload),
-    futuresPrice: payload =>
-      futuresPubCall('/v1/ticker/price', payload).then(r =>
+    futuresMarkPrice: (payload, agent) => futuresPubCall({ path: '/v1/premiumIndex', data: payload, agent }),
+    futuresFundingRate: (payload, agent) => checkParams('futuresFundingRate', payload, ['symbol']) && futuresKCall({ path: '/v1/fundingRate', data: payload, agent }),
+    futuresDailyStats: (payload, agent) => futuresPubCall({ path: '/v1/ticker/24hr', data: payload, agent }),
+    futuresPrice: (payload, agent) =>
+      futuresPubCall({ path: '/v1/ticker/price', data: payload, agent }).then(r =>
         Array.isArray(r) ?
           (
             (payload.reduce && r.reduce((out, cur) => ((out[cur.symbol] = cur.price), out), {})) || r
@@ -346,46 +374,46 @@ export default opts => {
           r.price // TODO: docs
       ), // TODO: verify that adding reduce to the payload doesn't cause a problem
     // futuresAvgPrice: payload => futuresPubCall('/v3/avgPrice', payload),
-    futuresBookTicker: payload =>
-      futuresPubCall('/v1/ticker/bookTicker', payload).then(r =>
+    futuresBookTicker: (payload, agent) =>
+      futuresPubCall({path: '/v1/ticker/bookTicker', data: payload, agent }).then(r =>
         (
           payload.reduce && Array.isArray(r) && 
           r.reduce((out, cur) => ((out[cur.symbol] = cur), out), {})
         ) || r // TODO: docs
       ),
-    futuresAllForceOrders: payload => futuresPubCall('/v1/allForceOrders', payload),
-    futuresOpenInterest: payload => checkParams('futuresOpenInterest', payload, ['symbol']) && futuresPubCall('/v1/openInterest', payload),
-    futuresLeverageBracket: payload => futuresPubCall('/v1/leverageBracket', payload).then(r => 
+    futuresAllForceOrders: (payload, agent) => futuresPubCall({path: '/v1/allForceOrders', data: payload, agent }),
+    futuresOpenInterest: (payload, agent) => checkParams('futuresOpenInterest', payload, ['symbol']) && futuresPubCall({path: '/v1/openInterest', data: payload, agent }),
+    futuresLeverageBracket: (payload, agent) => futuresPubCall({path: '/v1/leverageBracket', data: payload, agent }).then(r => 
         Array.isArray(r) ?
           (
             (payload.reduce && r.reduce((out, cur) => ((out[cur.symbol] = cur.brackets), out), {}) || r)
           ):
           r.brackets // TODO: docs
     ),
-    futuresAccountTransfer: payload => checkParams('futuresAccountTransfer', payload, ['asset', 'amount', 'type']) && privCall('/sapi/v1/futures/transfer ', payload, 'POST'),
+    futuresAccountTransfer: (payload, agent) => checkParams('futuresAccountTransfer', payload, ['asset', 'amount', 'type']) && privCall({path: '/sapi/v1/futures/transfer ', data: payload, method: 'POST', agent }),
     // eslint-disable-next-line id-length
-    futuresAccountTransactionHistory: payload => checkParams('futuresAccountTransactionHistory', payload, ['asset', 'startTime']) && privCall('/sapi/v1/futures/transfer', payload),
-    futuresOrder: payload => futuresOrder(futuresPrivCall, payload, '/v1/order'),
-    futuresOrderTest: payload => futuresOrder(futuresPrivCall, payload, '/v3/order/test'), // TODO: remove
-    futuresGetOrder: payload => checkParams('futuresQueryOrder', payload, ['symbol']) && futuresPrivCall('/v1/order', payload),
-    futuresCancelOrder: payload => checkParams('futuresCancelOrder', payload, ['symbol']) && futuresPrivCall('/v1/order', payload, 'DELETE'),
-    futuresCancelAllOpenOrders: payload => checkParams('futuresCancelOrder', payload, ['symbol']) && futuresPrivCall('/v1/allOpenOrders', payload, 'DELETE'),
-    futuresCancelMultipleOrders: payload => checkParams('futuresCancelMultipleOrders', payload, ['symbol']) && futuresPrivCall('/v1/batchOrders', payload),
-    futuresGetOpenOrder: payload => checkParams('futuresGetOpenOrder', payload, ['symbol']) && futuresPrivCall('/v1/openOrder', payload),
-    futuresGetAllOpenOrders: payload => futuresPrivCall('/v1/openOrders', payload),
-    futuresGetAllOrders: payload => checkParams('futuresGetAllOrders', payload, ['symbol']) && futuresPrivCall('/v1/allOrders', payload),
-    futuresAccountBalance: payload => futuresPrivCall('/v1/balance', payload),
-    futuresAccountInfo: payload => futuresPrivCall('/v1/account', payload),
-    futuresChangeLeverage: payload => checkParams('futuresChange<Leverage', payload, ['symbol', 'leverage']) && futuresPrivCall('/v1/leverage', payload, 'POST'),
-    futuresChangeMarginType: payload => checkParams('futuresChangeMarginType', payload, ['symbol', 'marginType']) && futuresPrivCall('/v1/marginType', payload, 'POST'),
-    futuresModifyPositionMargin: payload => checkParams('futuresModifyPositionMargin', payload, ['symbol', 'amount']) && futuresPrivCall('/v1/positionMargin', payload, 'POST'),
-    futuresPositionMarginHistory: payload => checkParams('futuresPositionMarginHistory', payload, ['symbol']) && futuresPrivCall('/v1/positionMargin/history', payload),
-    futuresPositionRisk: payload => futuresPrivCall('/v1/positionRisk', payload),
-    futuresUserTrades: payload => checkParams('futuresUserTrades', payload, ['symbol']) && futuresPrivCall('/v1/userTrades', payload),
-    futuresIncomeHistory: payload => futuresPrivCall('/v1/income', payload),
-    futuresGetUserDataStream: payload => futuresPrivCall('/v1/listenKey', payload, 'POST', true),
-    futuresKeepUserDataStream: payload => futuresPrivCall('/v1/listenKey', payload, 'PUT', false, true),
-    futuresCloseUserDataStream: payload => futuresPrivCall('/v1/listenKey', payload, 'DELETE', false, true)
+    futuresAccountTransactionHistory: (payload, agent) => checkParams('futuresAccountTransactionHistory', payload, ['asset', 'startTime']) && privCall({ path: '/sapi/v1/futures/transfer', data: payload, agent }),
+    futuresOrder: (payload, agent) => futuresOrder(futuresPrivCall, payload, '/v1/order', agent),
+    futuresOrderTest: (payload, agent) => futuresOrder(futuresPrivCall, payload, '/v3/order/test', agent), // TODO: remove
+    futuresGetOrder: (payload, agent) => checkParams('futuresQueryOrder', payload, ['symbol']) && futuresPrivCall({ path: '/v1/order', data: payload, agent }),
+    futuresCancelOrder: (payload, agent) => checkParams('futuresCancelOrder', payload, ['symbol']) && futuresPrivCall({ path: '/v1/order', data: payload, method: 'DELETE', agent }),
+    futuresCancelAllOpenOrders: (payload, agent) => checkParams('futuresCancelOrder', payload, ['symbol']) && futuresPrivCall({ path: '/v1/allOpenOrders', data: payload, method: 'DELETE', agent }),
+    futuresCancelMultipleOrders: (payload, agent) => checkParams('futuresCancelMultipleOrders', payload, ['symbol']) && futuresPrivCall({ path: '/v1/batchOrders', data: payload, agent }),
+    futuresGetOpenOrder: (payload, agent) => checkParams('futuresGetOpenOrder', payload, ['symbol']) && futuresPrivCall({ path: '/v1/openOrder', data: payload, agent }),
+    futuresGetAllOpenOrders: (payload, agent) => futuresPrivCall({ path: '/v1/openOrders', data: payload, agent }),
+    futuresGetAllOrders: (payload, agent) => checkParams('futuresGetAllOrders', payload, ['symbol']) && futuresPrivCall({ path: '/v1/allOrders', data: payload, agent }),
+    futuresAccountBalance: (payload, agent) => futuresPrivCall({ path: '/v1/balance', data: payload, agent }),
+    futuresAccountInfo: (payload, agent) => futuresPrivCall({ path: '/v1/account', data: payload, agent }),
+    futuresChangeLeverage: (payload, agent) => checkParams('futuresChange<Leverage', payload, ['symbol', 'leverage']) && futuresPrivCall({ path: '/v1/leverage', data: payload, method: 'POST', agent }),
+    futuresChangeMarginType: (payload, agent) => checkParams('futuresChangeMarginType', payload, ['symbol', 'marginType']) && futuresPrivCall({ path: '/v1/marginType', data: payload, method: 'POST', agent }),
+    futuresModifyPositionMargin: (payload, agent) => checkParams('futuresModifyPositionMargin', payload, ['symbol', 'amount']) && futuresPrivCall({ path: '/v1/positionMargin', data: payload, method: 'POST', agent }),
+    futuresPositionMarginHistory: (payload, agent) => checkParams('futuresPositionMarginHistory', payload, ['symbol']) && futuresPrivCall({ path: '/v1/positionMargin/history', data: payload, agent }),
+    futuresPositionRisk: (payload, agent) => futuresPrivCall({ path: '/v1/positionRisk', data: payload, agent }),
+    futuresUserTrades: (payload, agent) => checkParams('futuresUserTrades', payload, ['symbol']) && futuresPrivCall({ path: '/v1/userTrades', data: payload, agent }),
+    futuresIncomeHistory: (payload, agent) => futuresPrivCall({ path: '/v1/income', data: payload, agent }),
+    futuresGetUserDataStream: (payload, agent) => futuresPrivCall({ path: '/v1/listenKey', data: payload, method: 'POST', noData: true, agent }),
+    futuresKeepUserDataStream: (payload, agent) => futuresPrivCall({ path: '/v1/listenKey', data: payload, method: 'PUT', noData: false, noExtraData: true, agent }),
+    futuresCloseUserDataStream: (payload, agent) => futuresPrivCall({ path: '/v1/listenKey', data: payload, method: 'DELETE', noData: false, noExtraData: true, agent })
   }
 }
 
