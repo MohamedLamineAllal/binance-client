@@ -227,7 +227,6 @@ test('[WS] candles', t => {
 
   return new Promise(resolve => {
     client.ws.candles(['ETHBTC', 'BNBBTC', 'BNTBTC'], '5m', candle => {
-      console.log(candle);
       checkFields(t, candle, [
         'eventType',
         'eventTime',
@@ -472,7 +471,6 @@ test('[WS] userEvents', t => {
 })
 
 if (process.env.API_KEY) {
-  console.log('API _ KEY HERE :::>')
   require('./authenticated')
 }
 

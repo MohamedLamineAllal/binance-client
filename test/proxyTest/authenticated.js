@@ -1,6 +1,8 @@
 import Binance from 'index'
-import HttpsProxyAgent from 'https-proxy-agent'
+import { getProxyHttpAgent } from 'proxy-http-agent'
+
 import { checkFields } from '../utils'
+
 
 export const testAuthenticated = (test) => {  
   const client = Binance({
@@ -8,9 +10,8 @@ export const testAuthenticated = (test) => {
     apiSecret: process.env.API_SECRET,
   });
 
-  const proxyAgent = new HttpsProxyAgent({
-    host: 'localhost',
-    port: 8123
+  const proxyAgent = getProxyHttpAgent({
+    proxy: `http://localhost:${process.env.PROXY_PORT}`
   });
 
   test('[REST] order', async t => {

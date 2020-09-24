@@ -1253,3 +1253,47 @@ import Binance, { ErrorCodes } from 'binance-client'
 
 console.log(ErrorCodes.INVALID_ORDER_TYPE) // -1116
 ```
+
+## Using proxy
+
+To use a proxy we get to pass the agent object (http.Agent instance (or an object that inherit it))
+
+To use proxy with fetch or http.request
+Generally we use the package
+
+https://www.npmjs.com/package/https-proxy-agent 
+
+However following this issue here
+
+https://github.com/ccxt/ccxt/issues/6272#issuecomment-565525103
+
+You can see that https-proxy-agent no more extends http.Agent directly but extends the base-agent module Class.
+
+The quick solutions are either you use an older version like: 3.x version!
+Or use the work around in the link above!
+Or make your own implementation that extends http.Agent!
+
+And because we are cool! We do provide a helper that provide that through this module that implement the tick in the comment above: <moduleLink>
+
+Install
+
+```sh
+npm install proxy-https-agent --save
+```
+
+The name start with proxy and make the accent on https agent to highlight that it's https.Agent
+
+```js
+const { getProxyHttpAgent } = require('proxy-https-agent');
+
+let agent = getProxyHttpAgent('http://myProxy.com:8000');
+```
+
+Also the module is build by typescript! It support typescript too out of the box!
+
+```js
+import { getProxyHttpAgent } = from 'proxy-https-agent';
+import { Agent as HttpsAgent } from 'https';
+
+let agent: HttpsAgent = getProxyHttpAgent('http://myProxy.com:8000');
+```
