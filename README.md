@@ -1,5 +1,7 @@
 # binance-client
 
+> NOTICE: Proxy support was Added (check the last section in the doc)
+
 > NOTICE: BINANCE FUTURES support
 >
 > (user stream is supported ! ORDER_TRADE_UPDATE object is renamed! ACCOUNT_UPDATE not yet! But you can use it raw!)
@@ -1258,42 +1260,42 @@ console.log(ErrorCodes.INVALID_ORDER_TYPE) // -1116
 
 To use a proxy we get to pass the agent object (http.Agent instance (or an object that inherit it))
 
-To use proxy with fetch or http.request
-Generally we use the package
+And this is the way to use proxy with fetch or http.request!
 
-https://www.npmjs.com/package/https-proxy-agent 
+(binance-client use fetch)
 
-However following this issue here
+We do provide a helper for such agent creation
 
-https://github.com/ccxt/ccxt/issues/6272#issuecomment-565525103
+https://github.com/Glitnirian/ProxyHttpAgent
 
-You can see that https-proxy-agent no more extends http.Agent directly but extends the base-agent module Class.
+**ProxyHttpAgent** module!
 
-The quick solutions are either you use an older version like: 3.x version!
-Or use the work around in the link above!
-Or make your own implementation that extends http.Agent!
+Which wrap the [**tunnel**](https://github.com/koichik/node-tunnel) module for more flexibility!
 
-And because we are cool! We do provide a helper that provide that through this module that implement the tick in the comment above: <moduleLink>
+Note that to setup a proxy usage you need to pass the **agent object** as the **last parameter of any function**!
 
-Install
+``````ts
+import { getProxyHttpAgent } = from 'proxy-http-agent';
+import Binance from 'binance-client';
 
-```sh
-npm install proxy-https-agent --save
+const client = Binance();
+
+const proxyUrl = 'http://myCoolProxy.com:8123';
+
+const agent getProxyHttpAgent({
+  proxy: proxyUrl
+});
+
+const candles = await client.candles(
+  { symbol: 'ETHBTC' },
+  agent // here our agent object go as last param
+);
 ```
 
-The name start with proxy and make the accent on https agent to highlight that it's https.Agent
+Note too the proxy forwarding only work from nodejs!
+Don't expect it to work in the browser!
 
-```js
-const { getProxyHttpAgent } = require('proxy-https-agent');
+As the browser platform have no support for proxy usages!
+If you want to use proxy! You've got to pass through your own server to do that for you!
 
-let agent = getProxyHttpAgent('http://myProxy.com:8000');
-```
-
-Also the module is build by typescript! It support typescript too out of the box!
-
-```js
-import { getProxyHttpAgent } = from 'proxy-https-agent';
-import { Agent as HttpsAgent } from 'https';
-
-let agent: HttpsAgent = getProxyHttpAgent('http://myProxy.com:8000');
-```
+Because we may not know that! And expect it! And then wast time!
