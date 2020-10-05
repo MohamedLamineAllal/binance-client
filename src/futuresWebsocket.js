@@ -561,7 +561,8 @@ const user = opts => cb => {
   }
 
   const makeStream = isReconnecting => {
-    return _futuresGetUserDataStream()
+    return new Promise((resolve) => {
+      _futuresGetUserDataStream()
       .then(({ listenKey }) => {
         w = openWebSocket(`${BASE}/ws/${listenKey}`)
         w.onmessage = msg => handleEvent(msg)
@@ -573,15 +574,19 @@ const user = opts => cb => {
         }
         // TODO: think about using only listenKeyExpired
 
-        return options => closeStream(options)
+        resolve({
+          closeStream: options => closeStream(options),
+          ws: w
+        })
       })
       .catch(err => {
         if (isReconnecting) {
-          setTimeout(() => makeStream(true), 30e3)
+          setTimeout(() => { resolve(makeStream(true)) }, 30e3)
         } else {
-          throw err
+          throw err;
         }
       })
+    })
   }
 
   return makeStream(false)

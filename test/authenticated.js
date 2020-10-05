@@ -154,7 +154,8 @@ test('[REST] error code', async t => {
 })
 
 test('[WS] user', async t => {
-  const clean = await client.ws.user()
+  const { clean, ws } = await client.ws.user()
   t.truthy(clean)
   t.true(typeof clean === 'function')
+  t.truthy(ws)
 })

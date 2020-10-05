@@ -302,7 +302,8 @@ const user = opts => cb => {
   }
 
   const makeStream = isReconnecting => {
-    return getDataStream()
+    return new Promise((resolve) => {
+      getDataStream()
       .then(({ listenKey }) => {
         w = openWebSocket(`${BASE}/${listenKey}`)
         w.onmessage = msg => userEventHandler(cb)(msg)
@@ -313,15 +314,19 @@ const user = opts => cb => {
 
         keepAlive(true)
 
-        return options => closeStream(options)
+        resolve({
+          closeStream: options => closeStream(options),
+          ws: w
+        })      
       })
       .catch(err => {
         if (isReconnecting) {
-          setTimeout(() => makeStream(true), 30e3)
+          setTimeout(() => { resolve(makeStream(true)) }, 30e3)
         } else {
           throw err
         }
       })
+    })
   }
 
   return makeStream(false)

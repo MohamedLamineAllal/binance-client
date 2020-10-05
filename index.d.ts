@@ -408,7 +408,7 @@ declare module 'binance-client' {
         candles: (symbol: string | string[], interval: string, callback: (ticker: Candle) => void) => ReconnectingWebSocketHandler;
         trades: (symbols: string | string[], callback: (trade: WsTrade) => void) => ReconnectingWebSocketHandler;
         aggTrades: (symbols: string | string[], callback: (trade: WsAggregatedTrade) => void) => ReconnectingWebSocketHandler;
-        user: (callback: (msg: OutboundAccountInfo | ExecutionReport) => void) => ReconnectingWebSocketHandler;
+        user: (callback: (msg: OutboundAccountInfo | ExecutionReport) => void) => Promise<StreamReturnObj>;
     }
 
     export interface FuturesWebSocket {
@@ -427,11 +427,16 @@ declare module 'binance-client' {
         allBookTicker: (callback: (bookTickers: FWsBookTicker[]) => void) => ReconnectingWebSocketHandler;
         liquidationOrder: (symbol: string, callback: (liquidationOrder: FWsLiquidationOrder) => void) => ReconnectingWebSocketHandler;
         allLiquidationOrder: (callback: (liquidationOrders: FWsLiquidationOrder[]) => void) => ReconnectingWebSocketHandler;
-        user: (callback: (msg: FWSOrderUpdateData | { eventType: string, [prop: string]: any }) => void) => Promise<ReconnectingWebSocketHandler>; // TODO: ORDER AND ACCOUNT UPDATE TYPES
+        user: (callback: (msg: FWSOrderUpdateData | { eventType: string, [prop: string]: any }) => void) => Promise<StreamReturnObj>; // TODO: ORDER AND ACCOUNT UPDATE TYPES
         multiStreams: FMultiStreamsFactory
     }
 
     export type ReconnectingWebSocketHandler = (options?: {keepClosed: boolean, fastClose: boolean, delay: number}) => void
+
+    export interface StreamReturnObj {
+        closeStream: ReconnectingWebSocketHandler,
+        ws: WebSocket
+    }
 
     export enum CandleChartInterval {
         ONE_MINUTE = '1m',
