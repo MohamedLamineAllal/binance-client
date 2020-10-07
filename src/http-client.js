@@ -371,7 +371,7 @@ export default opts => {
           (
             (payload.reduce && r.reduce((out, cur) => ((out[cur.symbol] = cur.price), out), {})) || r
           ):
-          r.price // TODO: docs
+          r // TODO: docs
       ), // TODO: verify that adding reduce to the payload doesn't cause a problem
     // futuresAvgPrice: payload => futuresPubCall('/v3/avgPrice', payload),
     futuresBookTicker: (payload, agent) =>

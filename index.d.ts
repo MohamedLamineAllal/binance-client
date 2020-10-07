@@ -134,7 +134,8 @@ declare module 'binance-client' {
 
     interface FPrice {
         symbol: string,
-        price: string
+        price: string,
+        time: number
     }
 
     interface FReducedPrice {
