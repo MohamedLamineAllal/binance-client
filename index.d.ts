@@ -729,49 +729,65 @@ declare module 'binance-client' {
         accountAlias: string, // unique account code
         asset: string,
         balance: string,
-        withdrawAvailable: string
+        crossWalletBalance: string,
+        crossUnPnl: string,
+        availableBalance: string,
+        maxWithdrawAmount: string
     }
 
     interface FAccountInfo {
-        "assets": FAssetAccountInfo[],
-        canDeposit: boolean,
-        canTrade: boolean,
-        canWithdraw: boolean,
         feeTier: number,
-        maxWithdrawAmount: string,
-        positions: FPositionAccountInfo[],
+        canTrade: boolean,
+        canDeposit: boolean,
+        canWithdraw: boolean,
+        updateTime: number
         totalInitialMargin: string,
         totalMaintMargin: string,
-        totalMarginBalance: string,
-        totalOpenOrderInitialMargin: string,
-        totalPositionInitialMargin: string,
-        totalUnrealizedProfit: string,
         totalWalletBalance: string,
-        updateTime: number
+        totalUnrealizedProfit: string,
+        totalMarginBalance: string,
+        totalPositionInitialMargin: string,
+        totalOpenOrderInitialMargin: string,
+        totalCrossWalletBalance: string,
+        totalCrossUnPnl: string,
+        availableBalance: string,
+        maxWithdrawAmount: string,
+        assets: FAssetAccountInfo[],
+        positions: FPositionAccountInfo[],
     }
 
     interface FAssetAccountInfo {
         asset: string,
-        initialMargin: string,
-        maintMargin: string,
-        marginBalance: string,
-        maxWithdrawAmount: string,
-        openOrderInitialMargin: string,
-        positionInitialMargin: string,
-        unrealizedProfit: string,
         walletBalance: string
+        unrealizedProfit: string,
+        marginBalance: string,
+        maintMargin: string,
+        initialMargin: string,
+        positionInitialMargin: string,
+        openOrderInitialMargin: string,
+        crossWalletBalance: string,
+        crossUnPnl: string,
+        availableBalance: string,
+        maxWithdrawAmount: string,
     }
 
     interface FPositionAccountInfo {
-        isolated: boolean, 
-        leverage: string,
+        symbol: string,
         initialMargin: string,
         maintMargin: string,
-        openOrderInitialMargin: string,
-        positionInitialMargin: string,
-        symbol: string,
         unrealizedProfit: string
+        positionInitialMargin: string,
+        openOrderInitialMargin: string,
+        leverage: string,
+        isolated: boolean,
+        entryPrice: string,
+        maxNational: string,
+        positionSide: FPositionSide 
     }
+
+    export type FPositionSide = 'BOTH'
+        | 'LONG'
+        | 'SHORT'; 
 
     export interface FLeverageChangeResp {
         leverage: number,
