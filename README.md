@@ -1256,6 +1256,231 @@ import Binance, { ErrorCodes } from 'binance-client'
 console.log(ErrorCodes.INVALID_ORDER_TYPE) // -1116
 ```
 
+## Binance futures
+
+### Futures Websocket
+
+#### user data stream
+
+```ts
+client.fws.user((data) => {
+  // ...
+});
+
+```
+
+3 main events (MARGIN_CALL, ACCOUNT_UPDATE, ACCOUNT_ORDER_UPDATE)
+
+##### Signature
+
+```ts
+user: (callback: (msg: FWSUserOrderUpdateData | FWSUserAccountUpdateData | FWSUserMarginCallEventData | { eventType: string, [prop: string]: any }) => void) => Promise<StreamReturnObj>;
+```
+
+Orders updates data :
+
+```ts
+export interface FWSUserOrderUpdateData {
+    eventType: 'ORDER_TRADE_UPDATE',
+    eventTime: number,
+    transactTime: number,
+    order: FWSOrderUpdateOrder 
+}
+
+export interface FWSOrderUpdateOrder {
+    symbol: string,
+    clientOrderId: string,
+    side: FOrderSide,
+    type: FOrderType
+    timeInForce: FTimeInForce,
+    origQty: string,
+    origPrice: string,
+    avgPrice: string,
+    stopPrice: string,
+    execType: FExecutionType,
+    status: FOrderStatus,
+    orderId: number,
+    lastFilledQty: string,
+    filledAccumulatedQty: string,
+    lastFilledPrice: string,
+    commissionAsset: string,
+    commission: string,
+    tradeTime: number,
+    tradeId: number,
+    bidNational: string,
+    askNational: string,
+    isMaker: boolean,
+    isReduceOnly: boolean,
+    stopPriceType: string // TODO: type
+}
+```
+
+Account update data:
+
+```ts
+export interface FWSUserAccountUpdateData {
+  eventType: 'ACCOUNT_UPDATE',
+  eventTime: number,
+  transactTime: number,
+  updateData: {
+      eventReasonType: FSWUserAccountUpdateEventReasonType,
+      balances: FWSUserAccountUpdateBalance[],
+      positions: FWSUserAccountUpdatePosition[]
+  }
+}
+
+export type FSWUserAccountUpdateEventReasonType =
+  | 'DEPOSIT'
+  | 'WITHDRAW'
+  | 'ORDER'
+  | 'FUNDING_FEE'
+  | 'WITHDRAW_REJECT'
+  | 'ADJUSTMENT'
+  | 'INSURANCE_CLEAR'
+  | 'ADMIN_DEPOSIT'
+  | 'ADMIN_WITHDRAW'
+  | 'MARGIN_TRANSFER'
+  | 'MARGIN_TYPE_CHANGE'
+  | 'ASSET_TRANSFER'
+  | 'OPTIONS_PREMIUM_FEE'
+  | 'OPTIONS_SETTLE_PROFIT';
+
+export interface FWSUserAccountUpdateBalance {
+  asset: string,
+  balance: string,
+  crossWalletBalance: string
+}
+
+export interface FWSUserAccountUpdatePosition {
+  symbol: string,
+  positionAmount: string,
+  entryPrice: string,
+  preAccumulatedRealizedFee: string,
+  marginType: string,
+  isolatedWallet: string,
+  positionSide: FPositionSide,
+}
+```
+
+
+Margin call Data:
+
+```ts    
+export interface FWSUserMarginCallEventData {
+    eventType: 'MARGIN_CALL',
+    eventTime: number,
+    crossWalletBalance: string,
+    positions: FWSUserMarginCallEventPosition[] 
+}
+
+export interface FWSUserMarginCallEventPosition{
+    symbol: string,
+    positionSide: FPositionSide,
+    positionAmount: string,
+    marginType: string,
+    isolatedWallet: string,
+    markPrice: string,
+    unrealizedPnL: string,
+    maintenanceMarginRequired: string
+}
+```
+
+#####  Event description and info
+
+https://binance-docs.github.io/apidocs/futures/en/#user-data-streams
+
+###### MARGIN_CALL
+
+https://binance-docs.github.io/apidocs/futures/en/#event-user-data-stream-expired
+
+- When the user's position risk ratio is too high, this stream will be pushed.
+- This message is only used as risk guidance information and is not recommended for investment strategies.
+- In the case of a highly volatile market, there may be the possibility that the user's position has been liquidated at the same time when this stream is pushed out.
+
+###### ACCOUNT_UPDATE
+
+https://binance-docs.github.io/apidocs/futures/en/#event-balance-and-position-update
+
+- Event type is ACCOUNT_UPDATE.
+
+- When balance or position get updated, this event will be pushed.
+  - ACCOUNT_UPDATE will be pushed only when update happens on user's account, including changes on balances, positions, or margin type.
+  - Unfilled orders or cancelled orders will not make the event ACCOUNT_UPDATE pushed, since there's no change on positions.
+  - Only positions of symbols with non-zero isolatd wallet or non-zero position amount will be pushed in the "position" part of the event ACCOUNT_UPDATE when any position changes.
+
+- When "FUNDING FEE" changes to the user's balance, the event will be pushed with the brief message:
+  - When "FUNDING FEE" occurs in a crossed position, ACCOUNT_UPDATE will be pushed with only the balance B(including the "FUNDING FEE" asset only), without any position P message.
+  - When "FUNDING FEE" occurs in an isolated position, ACCOUNT_UPDATE will be pushed with only the balance B(including the "FUNDING FEE" asset only) and the relative position message P( including the isolated position on which the "FUNDING FEE" occurs only, without any other position message).
+
+- The field "eventReasonType" represents the reason type for the event and may shows the following possible types:
+  - DEPOSIT
+  - WITHDRAW
+  - ORDER
+  - FUNDING_FEE
+  - WITHDRAW_REJECT
+  - ADJUSTMENT
+  - INSURANCE_CLEAR
+  - ADMIN_DEPOSIT
+  - ADMIN_WITHDRAW
+  - MARGIN_TRANSFER
+  - MARGIN_TYPE_CHANGE
+  - ASSET_TRANSFER
+  - OPTIONS_PREMIUM_FEE
+  - OPTIONS_SETTLE_PROFIT
+
+###### ACCOUNT_ORDER_UPDATE
+
+https://binance-docs.github.io/apidocs/futures/en/#event-order-update
+
+When new order created, order status changed will push such event. event type is ORDER_TRADE_UPDATE.
+
+**Side**
+
+- BUY
+- SELL
+
+**Order Type**
+
+- MARKET
+- LIMIT
+- STOP
+- TAKE_PROFIT
+- LIQUIDATION
+
+**Execution Type**
+
+- NEW
+- PARTIAL_FILL
+- FILL
+- CANCELED
+- CALCULATED - Liquidation Execution
+- EXPIRED
+- TRADE
+
+**Order Status**
+
+- NEW
+- PARTIALLY_FILLED
+- FILLED
+- CANCELED
+- EXPIRED
+- NEW_INSURANCE - Liquidation with Insurance Fund
+- NEW_ADL - Counterparty Liquidation`
+
+**Time in force**
+
+- GTC
+- IOC
+- FOK
+- GTX
+
+**Working Type**
+
+- MARK_PRICE
+- CONTRACT_PRICE
+
+
+
 ## Using proxy
 
 To use a proxy we get to pass the agent object (http.Agent instance (or an object that inherit it))

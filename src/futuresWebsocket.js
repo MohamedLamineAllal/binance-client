@@ -441,7 +441,48 @@ const depth = (payload, cb) => {
 // _____________________________________________ user data streams
 
 const userTransforms = {
-  // ACCOUNT_UPDATE: TODO:
+  MARGIN_CALL: m => {
+    return {
+      eventType: 'MARGIN_CALL',
+      evenTime: m.E,
+      crossWalletBalance: m.cw,
+      positions: m.p.map(p => ({
+        symbol: p.s,
+        positionSide: p.ps,
+        positionAmount: p.pa,
+        marginType: p.mt,
+        isolatedWallet: p.iw,
+        markPrice: p.mp,
+        unrealizedPnL: p.up,
+        maintenanceMarginRequired: p.mm
+      }))
+    }
+  },
+  ACCOUNT_UPDATE: m => {
+    const a = m.a;
+    return {
+      eventType: 'ACCOUNT_UPDATE',
+      eventTime: m.E,
+      transactTime: m.T,
+      updateData: {
+        eventReasonType: a.m,
+        balances: a.B.map((d) => ({
+          asset: d.a,
+          balance: d.wb,
+          crossWalletBalance: d.cw
+        })),
+        positions: a.P.map((d) => ({
+          symbol: d.s,
+          positionAmount: d.pa,
+          entryPrice: d.ep,
+          preAccumulatedRealizedFee: d.cr,
+          marginType: d.mt,
+          isolatedWallet: d.iw,
+          positionSide: d.ps
+        }))
+      }
+    }
+  },
   ORDER_TRADE_UPDATE: m => {
     const o = m.o;
     return {

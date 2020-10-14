@@ -281,9 +281,67 @@ declare module 'binance-client' {
         }
     }
 
+    export interface FWSUserMarginCallEventPosition{
+        symbol: string,
+        positionSide: FPositionSide,
+        positionAmount: string,
+        marginType: string,
+        isolatedWallet: string,
+        markPrice: string,
+        unrealizedPnL: string,
+        maintenanceMarginRequired: string
+    }
+    export interface FWSUserMarginCallEventData {
+        eventType: 'MARGIN_CALL',
+        eventTime: number,
+        crossWalletBalance: string,
+        positions: FWSUserMarginCallEventPosition[] 
+    }
 
-    export interface FWSOrderUpdateData {
-        eventType: string,
+    export type FSWUserAccountUpdateEventReasonType =
+        | 'DEPOSIT'
+        | 'WITHDRAW'
+        | 'ORDER'
+        | 'FUNDING_FEE'
+        | 'WITHDRAW_REJECT'
+        | 'ADJUSTMENT'
+        | 'INSURANCE_CLEAR'
+        | 'ADMIN_DEPOSIT'
+        | 'ADMIN_WITHDRAW'
+        | 'MARGIN_TRANSFER'
+        | 'MARGIN_TYPE_CHANGE'
+        | 'ASSET_TRANSFER'
+        | 'OPTIONS_PREMIUM_FEE'
+        | 'OPTIONS_SETTLE_PROFIT';
+
+    export interface FWSUserAccountUpdateBalance {
+        asset: string,
+        balance: string,
+        crossWalletBalance: string
+    }
+
+    export interface FWSUserAccountUpdatePosition {
+        symbol: string,
+        positionAmount: string,
+        entryPrice: string,
+        preAccumulatedRealizedFee: string,
+        marginType: string,
+        isolatedWallet: string,
+        positionSide: FPositionSide,
+    }
+    export interface FWSUserAccountUpdateData {
+        eventType: 'ACCOUNT_UPDATE',
+        eventTime: number,
+        transactTime: number,
+        updateData: {
+            eventReasonType: FSWUserAccountUpdateEventReasonType,
+            balances: FWSUserAccountUpdateBalance[],
+            positions: FWSUserAccountUpdatePosition[]
+        }
+    }
+
+    export interface FWSUserOrderUpdateData {
+        eventType: 'ORDER_TRADE_UPDATE',
         eventTime: number,
         transactTime: number,
         order: FWSOrderUpdateOrder 
@@ -428,7 +486,7 @@ declare module 'binance-client' {
         allBookTicker: (callback: (bookTickers: FWsBookTicker[]) => void) => ReconnectingWebSocketHandler;
         liquidationOrder: (symbol: string, callback: (liquidationOrder: FWsLiquidationOrder) => void) => ReconnectingWebSocketHandler;
         allLiquidationOrder: (callback: (liquidationOrders: FWsLiquidationOrder[]) => void) => ReconnectingWebSocketHandler;
-        user: (callback: (msg: FWSOrderUpdateData | { eventType: string, [prop: string]: any }) => void) => Promise<StreamReturnObj>; // TODO: ORDER AND ACCOUNT UPDATE TYPES
+        user: (callback: (msg: FWSUserOrderUpdateData | FWSUserAccountUpdateData | FWSUserMarginCallEventData | { eventType: string, [prop: string]: any }) => void) => Promise<StreamReturnObj>;
         multiStreams: FMultiStreamsFactory
     }
 
