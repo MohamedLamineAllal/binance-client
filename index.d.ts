@@ -460,39 +460,44 @@ declare module 'binance-client' {
     }
 
     export interface WebSocket {
-        depth: (symbol: string | string[], callback: (depth: Depth) => void) => ReconnectingWebSocketHandler;
-        partialDepth: (options: { symbol: string, level: number } | { symbol: string, level: number }[], callback: (depth: PartialDepth) => void) => ReconnectingWebSocketHandler;
-        ticker: (symbol: string | string[], callback: (ticker: Ticker) => void) => ReconnectingWebSocketHandler;
-        allTickers: (callback: (tickers: Ticker[]) => void) => ReconnectingWebSocketHandler;
-        candles: (symbol: string | string[], interval: string, callback: (ticker: Candle) => void) => ReconnectingWebSocketHandler;
-        trades: (symbols: string | string[], callback: (trade: WsTrade) => void) => ReconnectingWebSocketHandler;
-        aggTrades: (symbols: string | string[], callback: (trade: WsAggregatedTrade) => void) => ReconnectingWebSocketHandler;
+        depth: (symbol: string | string[], callback: (depth: Depth) => void) => StreamReturnObj;
+        partialDepth: (options: { symbol: string, level: number } | { symbol: string, level: number }[], callback: (depth: PartialDepth) => void) => StreamReturnObj;
+        ticker: (symbol: string | string[], callback: (ticker: Ticker) => void) => StreamReturnObj;
+        allTickers: (callback: (tickers: Ticker[]) => void) => StreamReturnObj;
+        candles: (symbol: string | string[], interval: string, callback: (ticker: Candle) => void) => StreamReturnObj;
+        trades: (symbols: string | string[], callback: (trade: WsTrade) => void) => StreamReturnObj;
+        aggTrades: (symbols: string | string[], callback: (trade: WsAggregatedTrade) => void) => StreamReturnObj;
         user: (callback: (msg: OutboundAccountInfo | ExecutionReport) => void) => Promise<StreamReturnObj>;
     }
 
     export interface FuturesWebSocket {
-        depth: (payload: { symbol: string, speed?: string }, callback: (depth: FWsDepth) => void) => ReconnectingWebSocketHandler;
-        partialDepth: (payload: { symbol: string, speed?: string, level?: number }, callback: (depth: FWsPartialDepth) => void) => ReconnectingWebSocketHandler;
-        markPrice: (payload: { symbol: string, speed?: string }, callback: (markPrice: MarkPrice) => void) => ReconnectingWebSocketHandler;
-        markPriceAll: (payload: { speed?: string, reduce?: boolean }, callback: (markPrices: MarkPrice[] | ReducedMarkPrice) => void) => ReconnectingWebSocketHandler;
-        candles: (symbol: string, interval: string, callback: (candle: FWsCandle) => void) => ReconnectingWebSocketHandler;
-        trades: (symbols: string, callback: (trade: FWsTrade) => void) => ReconnectingWebSocketHandler;
-        aggTrades: (symbols: string, callback: (trade: FWsAggregatedTrade) => void) => ReconnectingWebSocketHandler;
-        ticker: (symbol: string | string[], callback: (ticker: FWsTicker) => void) => ReconnectingWebSocketHandler;
-        miniTicker: (symbol: string, callback: (miniTicker: FWsMiniTicker) => void) => ReconnectingWebSocketHandler;
-        allMiniTickers: (callback: (miniTickers: FWsMiniTicker[]) => void) => ReconnectingWebSocketHandler;
-        allTickers: (callback: (tickers: FWsTicker[]) => void) => ReconnectingWebSocketHandler;
-        bookTicker: (symbol: string, callback: (bookTicker: FWsBookTicker) => void) => ReconnectingWebSocketHandler;
-        allBookTicker: (callback: (bookTickers: FWsBookTicker[]) => void) => ReconnectingWebSocketHandler;
-        liquidationOrder: (symbol: string, callback: (liquidationOrder: FWsLiquidationOrder) => void) => ReconnectingWebSocketHandler;
-        allLiquidationOrder: (callback: (liquidationOrders: FWsLiquidationOrder[]) => void) => ReconnectingWebSocketHandler;
-        user: (callback: (msg: FWSUserOrderUpdateData | FWSUserAccountUpdateData | FWSUserMarginCallEventData | { eventType: string, [prop: string]: any }) => void) => Promise<StreamReturnObj>;
+        depth: (payload: { symbol: string, speed?: string }, callback: (depth: FWsDepth) => void) => FStreamReturnObj;
+        partialDepth: (payload: { symbol: string, speed?: string, level?: number }, callback: (depth: FWsPartialDepth) => void) => FStreamReturnObj;
+        markPrice: (payload: { symbol: string, speed?: string }, callback: (markPrice: MarkPrice) => void) => FStreamReturnObj;
+        markPriceAll: (payload: { speed?: string, reduce?: boolean }, callback: (markPrices: MarkPrice[] | ReducedMarkPrice) => void) => FStreamReturnObj;
+        candles: (symbol: string, interval: string, callback: (candle: FWsCandle) => void) => FStreamReturnObj;
+        trades: (symbols: string, callback: (trade: FWsTrade) => void) => FStreamReturnObj;
+        aggTrades: (symbols: string, callback: (trade: FWsAggregatedTrade) => void) => FStreamReturnObj;
+        ticker: (symbol: string | string[], callback: (ticker: FWsTicker) => void) => FStreamReturnObj;
+        miniTicker: (symbol: string, callback: (miniTicker: FWsMiniTicker) => void) => FStreamReturnObj;
+        allMiniTickers: (callback: (miniTickers: FWsMiniTicker[]) => void) => FStreamReturnObj;
+        allTickers: (callback: (tickers: FWsTicker[]) => void) => FStreamReturnObj;
+        bookTicker: (symbol: string, callback: (bookTicker: FWsBookTicker) => void) => FStreamReturnObj;
+        allBookTicker: (callback: (bookTickers: FWsBookTicker[]) => void) => FStreamReturnObj;
+        liquidationOrder: (symbol: string, callback: (liquidationOrder: FWsLiquidationOrder) => void) => FStreamReturnObj;
+        allLiquidationOrder: (callback: (liquidationOrders: FWsLiquidationOrder[]) => void) => FStreamReturnObj;
+        user: (callback: (msg: FWSUserOrderUpdateData | FWSUserAccountUpdateData | FWSUserMarginCallEventData | { eventType: string, [prop: string]: any }) => void) => Promise<FStreamReturnObj>;
         multiStreams: FMultiStreamsFactory
     }
 
     export type ReconnectingWebSocketHandler = (options?: {keepClosed: boolean, fastClose: boolean, delay: number}) => void
 
     export interface StreamReturnObj {
+        closeStream: ReconnectingWebSocketHandler,
+        ws: WebSocket | WebSocket[]
+    }
+
+    export interface FStreamReturnObj {
         closeStream: ReconnectingWebSocketHandler,
         ws: WebSocket
     }
@@ -845,7 +850,7 @@ declare module 'binance-client' {
 
     export type FPositionSide = 'BOTH'
         | 'LONG'
-        | 'SHORT'; 
+        | 'SHORT';
 
     export interface FLeverageChangeResp {
         leverage: number,

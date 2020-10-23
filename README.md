@@ -4,11 +4,11 @@
 
 > NOTICE: BINANCE FUTURES support
 >
-> (user stream is supported ! ORDER_TRADE_UPDATE object is renamed! ACCOUNT_UPDATE not yet! But you can use it raw!)
+> (User stream for Binance futures is fully supported ! Doc updated to reflect it! Go all bellow!)
 
 > Binance futures typescript supported
 
-> The doc on that matter wasn't updated! If you go for this package check the code source and the official doc
+> The doc for Binance (spot, margin,) wasn't updated! Neither **futures** is well documented! If you go for this package check the code source and the official doc! Still we are updating and adding more reference from time to time!
 
 > To note the Binance futures official doc is way nice
 >
@@ -16,13 +16,17 @@
 
 > The same order as the official doc was followed for the function implementation
 
-> The Doc here is just a big mess! We don't have time for it now! It will be updated at a later time!
+> The Doc here is just a big mess! We don't have time for it now! It will be updated at a later time! (If any one want to contribute! And match things between the code source and the official doc! And update the different sections! Special for normal Binance! Just a little updates are required! We will accept and review all PR! The library is just getting more complete and richer! With options that are not supported anywhere else! A good doc will make it helpful for a lot! And we want to make it so!)
 
 > For the future we will take full support and development responsibility for the package so it will be helpful to other people! As our work is based on it! We will keep it sharp at all times
 
-> No may be this is just the wrong destination! the package is well usable and all good! But there is no support! And all the doc is a mess
+> No may be this is just the wrong destination! the package is well usable and all good! And getting better and better! But there is no support! And all the doc is a mess
 
-NOTICE: The Doc is out of date!  
+NOTICE: The Doc is out of date! Make sure to verify the outcomes! Or check the Declaration type file [here](https://github.com/MohamedLamineAllal/binance-client/blob/master/index.d.ts)! Or the code source itself! (Use CTRL + F To be productive)!
+
+> NOTICE: if you use this library and just to save some hassle if it happen! In case you update! Then the code break! Immediately go check the package version! We may have add breaking changes updates! We are using semantic versioning! But still we made some partial breaking changes! Which we completed on the same version! We shouldn't have done that! But to move fast we did that! If anything check the version! Things will get more robust by the time that is coming!
+
+> Including cleaning that big mess README and doc! That make people go away! GO AWAY! UNLESS you see real VALUE hhhhh! (And of course i'm awesome hhhhhh! Humor can be magic)
 
 # DOC
 
@@ -955,16 +959,32 @@ console.log(await client.tradeFee())
 
 ### WebSockets
 
-Every websocket utility returns a function you can call to close the opened
-connection and avoid memory issues.
+Every websocket utility returns an object that contain the `closeStream` function you can call it to close the opened
+connection or connections and avoid memory issues.
+
+And to a `ws` that refer to websocket or a list of websockets objects! That you can use to listen to the websocket cycle events! Sometimes you may need that!
+
+Return object signature
+
+```ts
+export interface StreamReturnObj {
+  closeStream: ReconnectingWebSocketHandler,
+  ws: WebSocket | WebSocket[]
+}
+```
+
+You can check the WebSocket object api!
+
+https://developer.mozilla.org/en-US/docs/Web/API/WebSocket
+
 
 ```js
-const clean = client.ws.depth('ETHBTC', depth => {
+const { closeStream, ws } = client.ws.depth('ETHBTC', depth => {
   console.log(depth)
 })
 
 // After you're done
-clean()
+closeStream()
 ```
 
 #### depth
@@ -1260,6 +1280,36 @@ console.log(ErrorCodes.INVALID_ORDER_TYPE) // -1116
 
 ### Futures Websocket
 
+#### Normal streams
+
+We gonna update that section later! But here a quick signature representation! You can check it here ([Declaration type file](https://github.com/MohamedLamineAllal/binance-client/blob/master/index.d.ts))! For more details (Use CTRL + F)
+
+```ts
+export interface FuturesWebSocket {
+  depth: (payload: { symbol: string, speed?: string }, callback: (depth: FWsDepth) => void) => FStreamReturnObj;
+  partialDepth: (payload: { symbol: string, speed?: string, level?: number }, callback: (depth: FWsPartialDepth) => void) => FStreamReturnObj;
+  markPrice: (payload: { symbol: string, speed?: string }, callback: (markPrice: MarkPrice) => void) => FStreamReturnObj;
+  markPriceAll: (payload: { speed?: string, reduce?: boolean }, callback: (markPrices: MarkPrice[] | ReducedMarkPrice) => void) => FStreamReturnObj;
+  candles: (symbol: string, interval: string, callback: (candle: FWsCandle) => void) => FStreamReturnObj;
+  trades: (symbols: string, callback: (trade: FWsTrade) => void) => FStreamReturnObj;
+  aggTrades: (symbols: string, callback: (trade: FWsAggregatedTrade) => void) => FStreamReturnObj;
+  ticker: (symbol: string | string[], callback: (ticker: FWsTicker) => void) => FStreamReturnObj;
+  miniTicker: (symbol: string, callback: (miniTicker: FWsMiniTicker) => void) => FStreamReturnObj;
+  allMiniTickers: (callback: (miniTickers: FWsMiniTicker[]) => void) => FStreamReturnObj;
+  allTickers: (callback: (tickers: FWsTicker[]) => void) => FStreamReturnObj;
+  bookTicker: (symbol: string, callback: (bookTicker: FWsBookTicker) => void) => FStreamReturnObj;
+  allBookTicker: (callback: (bookTickers: FWsBookTicker[]) => void) => FStreamReturnObj;
+  liquidationOrder: (symbol: string, callback: (liquidationOrder: FWsLiquidationOrder) => void) => FStreamReturnObj;
+  allLiquidationOrder: (callback: (liquidationOrders: FWsLiquidationOrder[]) => void) => FStreamReturnObj;
+  // ...
+}
+```
+
+And you can check and compare with the official doc:
+
+https://binance-docs.github.io/apidocs/futures/en/
+
+
 #### user data stream
 
 ```ts
@@ -1315,7 +1365,7 @@ export interface FWSOrderUpdateOrder {
 }
 ```
 
-Account update data:
+Account update data (Balance and Position Update):
 
 ```ts
 export interface FWSUserAccountUpdateData {
@@ -1398,6 +1448,8 @@ https://binance-docs.github.io/apidocs/futures/en/#event-user-data-stream-expire
 - In the case of a highly volatile market, there may be the possibility that the user's position has been liquidated at the same time when this stream is pushed out.
 
 ###### ACCOUNT_UPDATE
+
+Balance and Position Update
 
 https://binance-docs.github.io/apidocs/futures/en/#event-balance-and-position-update
 

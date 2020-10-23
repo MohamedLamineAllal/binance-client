@@ -76,8 +76,10 @@ const tradesInternal = (symbol, streamName, outputMap, cb) => {
     cb(outputMap(JSON.parse(msg.data)))
   }
 
-  return options =>
-    w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
+  }
 }
 
 // _______________________________ markPrice
@@ -105,7 +107,10 @@ const markPrice = (payload, cb) => {
     });
   }
 
-  return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options });
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
+  }
 }
 
 // _______________________________ markPrice for all market
@@ -138,7 +143,10 @@ const markPriceAll = (payload, cb) => {
     return cb(data);
   }
 
-  return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options });
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
+  }
 }
 
 // _______________________________ candles (Kline/Candlestick)
@@ -192,7 +200,10 @@ const candles = (symbol, interval, cb) => {
     });
   };
 
-  return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
+  }
 }
 
 // _______________________________ tickers
@@ -205,7 +216,10 @@ const miniTicker = (symbol, cb) => {
     cb(miniTickerTransform(JSON.parse(msg.data)))
   }
 
-  return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
+  }
 };
 
 
@@ -219,7 +233,10 @@ const allMiniTickers = (cb) => {
     );
   }
 
-  return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
+  }
 };
 
 const miniTickerTransform = (d) => ({
@@ -242,7 +259,10 @@ const ticker = (symbol, cb) => {
     cb(tickerTransform(JSON.parse(msg.data)))
   }
 
-  return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
+  }
 };
 
 const allTickers = cb => {
@@ -255,7 +275,10 @@ const allTickers = cb => {
     )
   }
 
-  return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
+  }
 };
 
 const tickerTransform = m => ({
@@ -296,6 +319,11 @@ const bookTicker = (symbol, cb) => {
       )
     );
   }
+
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
+  }
 }
 
 const allBookTicker = cb => {
@@ -306,6 +334,11 @@ const allBookTicker = cb => {
       JSON.parse(msg.data)
         .map(d => bookTickerTransform(d))
     );
+  }
+
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
   }
 }
 
@@ -326,6 +359,11 @@ const liquidationOrder = (symbol, cb) => {
       JSON.parse(msg.data)
     ));
   }
+
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
+  }
 }
 
 const allLiquidationOrder = cb => {
@@ -336,6 +374,11 @@ const allLiquidationOrder = cb => {
       JSON.parse(msg.data)
         .map(d => liquidationOrderTransform(d))
     );
+  }
+
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
   }
 }
 
@@ -396,9 +439,17 @@ const partialDepth = (payload, cb) => {
       bidDepth: bidDepth.map(b => zip(['price', 'quantity'], b)),
       askDepth: askDepth.map(a => zip(['price', 'quantity'], a)),
     })
+
+    return {
+      closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+      ws: w
+    }
   }
 
-  return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
+  }
 }
 
 
@@ -433,7 +484,10 @@ const depth = (payload, cb) => {
     })
   }
 
-  return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
+  }
 }
 
 

@@ -33,8 +33,11 @@ const depth = (payload, cb) => {
     return w
   })
 
-  return options =>
-    cache.forEach(w => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }))
+  return {
+    closeStream: options => 
+    cache.forEach(w => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })),
+    ws: cache
+  }
 }
 
 const partialDepth = (payload, cb) => {
@@ -54,8 +57,11 @@ const partialDepth = (payload, cb) => {
     return w
   })
 
-  return options =>
-    cache.forEach(w => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }))
+  return {
+    closeStream: options =>
+    cache.forEach(w => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })),
+    ws: cache
+  }
 }
 
 const candles = (payload, interval, cb) => {
@@ -110,8 +116,11 @@ const candles = (payload, interval, cb) => {
     return w
   })
 
-  return options =>
-    cache.forEach(w => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }))
+  return {
+    closeStream: options =>
+    cache.forEach(w => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })),
+    ws: cache
+  }
 }
 
 const tickerTransform = m => ({
@@ -151,8 +160,11 @@ const ticker = (payload, cb) => {
     return w
   })
 
-  return options =>
-    cache.forEach(w => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }))
+  return {
+    closeStream: options =>
+    cache.forEach(w => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })),
+    ws: cache
+  }
 }
 
 const allTickers = cb => {
@@ -163,7 +175,10 @@ const allTickers = cb => {
     cb(arr.map(m => tickerTransform(m)))
   }
 
-  return options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })
+  return {
+    closeStream: options => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }),
+    ws: w
+  }
 }
 
 const tradesInternal = (payload, streamName, outputMap, cb) => {
@@ -176,8 +191,11 @@ const tradesInternal = (payload, streamName, outputMap, cb) => {
     return w
   })
 
-  return options =>
-    cache.forEach(w => w.close(1000, 'Close handle was called', { keepClosed: true, ...options }))
+  return {
+    closeStream: options =>
+      cache.forEach(w => w.close(1000, 'Close handle was called', { keepClosed: true, ...options })),
+    ws: cache
+  }
 }
 
 const aggTradesOutputMapping = (d) => ({
