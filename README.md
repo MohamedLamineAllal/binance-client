@@ -962,7 +962,7 @@ console.log(await client.tradeFee())
 Every websocket utility returns an object that contain the `closeStream` function you can call it to close the opened
 connection or connections and avoid memory issues.
 
-And to a `ws` that refer to websocket or a list of websockets objects! That you can use to listen to the websocket cycle events! Sometimes you may need that!
+And too a `ws` that refer to websocket or a list of websockets objects! That you can use to listen to the websocket cycle events! Sometimes you may need that! And we exposed the object! We needed that in our work!
 
 Return object signature
 
