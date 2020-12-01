@@ -393,8 +393,8 @@ declare module 'binance-client' {
         prices(agent?: Agent): Promise<{ [index: string]: string }>;
         avgPrice(options?: { symbol: string }, agent?: Agent): Promise<AvgPriceResult | AvgPriceResult[]>;
         time(agent?: Agent): Promise<number>;
-        ws: WebSocket;
-        fws: FuturesWebSocket;
+        ws: IBinanceWebSocket;
+        fws: IFuturesWebSocket;
         myTrades(options: { symbol: string, limit?: number, fromId?: number, useServerTime?: boolean }, agent?: Agent): Promise<MyTrade[]>;
         getOrder(options: { symbol: string, orderId: number, origClientOrderId?: string, recvWindow?: number, useServerTime?: boolean }, agent?: Agent): Promise<QueryOrderResult>;
         cancelOrder(options: { symbol: string; orderId: number, origClientOrderId?: string, newClientOrderId?: string, recvWindow?: number, useServerTime?: boolean }, agent?: Agent): Promise<CancelOrderResult>;
@@ -459,7 +459,7 @@ declare module 'binance-client' {
         message: string;
     }
 
-    export interface WebSocket {
+    export interface IBinanceWebSocket {
         depth: (symbol: string | string[], callback: (depth: Depth) => void) => StreamReturnObj;
         partialDepth: (options: { symbol: string, level: number } | { symbol: string, level: number }[], callback: (depth: PartialDepth) => void) => StreamReturnObj;
         ticker: (symbol: string | string[], callback: (ticker: Ticker) => void) => StreamReturnObj;
@@ -470,7 +470,7 @@ declare module 'binance-client' {
         user: (callback: (msg: OutboundAccountInfo | ExecutionReport) => void) => Promise<StreamReturnObj>;
     }
 
-    export interface FuturesWebSocket {
+    export interface IFuturesWebSocket {
         depth: (payload: { symbol: string, speed?: string }, callback: (depth: FWsDepth) => void) => FStreamReturnObj;
         partialDepth: (payload: { symbol: string, speed?: string, level?: number }, callback: (depth: FWsPartialDepth) => void) => FStreamReturnObj;
         markPrice: (payload: { symbol: string, speed?: string }, callback: (markPrice: MarkPrice) => void) => FStreamReturnObj;
