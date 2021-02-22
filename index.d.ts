@@ -413,26 +413,28 @@ declare module 'binance-client' {
         futuresPing: (agent?: Agent) => Promise<true>;
         futuresTime: (agent?: Agent) => Promise<number>;
         futuresExchangeInfo: (agent?: Agent) => Promise<FExchangeInfo>;
-        futuresBook: (payload: { symbol: string, limit?: number }, agent?: Agent) => Promise<FOrderBook>;
-        futuresTrades: (payload: { symbol: string, limit?: number }, agent?: Agent) => Promise<FTrade[]>;
-        futuresTradesHistory: (payload: { symbol: string, limit?: number, fromId?: number }, agent?: Agent) => Promise<FTrade[]>;
-        futuresAggTrades: (payload: { symbol: string, fromId?: string, startTime?: number, endTime?: number, limit?: number }, agent?: Agent) => Promise<FAggregatedTrade[]>;
-        futuresCandles: (payload: FCandlesOptions, agent?: Agent) => Promise<FCandleChartResult[]>;
+        futuresBook: (payload: { symbol: string, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FOrderBook>;
+        futuresTrades: (payload: { symbol: string, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FTrade[]>;
+        futuresTradesHistory: (payload: { symbol: string, limit?: number, fromId?: number, recvWindow?: number }, agent?: Agent) => Promise<FTrade[]>;
+        futuresAggTrades: (payload: { symbol: string, fromId?: string, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FAggregatedTrade[]>;
+        futuresCandles: (payload: FCandlesOptions & { recvWindow?: number }, agent?: Agent) => Promise<FCandleChartResult[]>;
         // ______________ futures exclusive
-        futuresMarkPrice: (payload: { symbol?: string }, agent?: Agent) => Promise<FMarkPrice>;
-        futuresFundingRate: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number }, agent?: Agent) => Promise<FFundingRate>;
-        futuresDailyStats: (payload: { symbol?: string }, agent?: Agent) => Promise<FDailyState>;
-        futuresPrice: (payload: { symbol?: string, reduce?: boolean }, agent?: Agent) => Promise<FPrice | FPrice[] | FReducedPrice>;
+        futuresChangePositionMode(payload: { dualSidePosition: boolean, recvWindow?: number })
+        futuresGetPositionMode(payload: { recvWindow?: number })
+        futuresMarkPrice: (payload: { symbol?: string, recvWindow?: number }, agent?: Agent) => Promise<FMarkPrice>;
+        futuresFundingRate: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FFundingRate>;
+        futuresDailyStats: (payload: { symbol?: string, recvWindow?: number }, agent?: Agent) => Promise<FDailyState>;
+        futuresPrice: (payload: { symbol?: string, reduce?: boolean, recvWindow?: number }, agent?: Agent) => Promise<FPrice | FPrice[] | FReducedPrice>;
         // TODO: Verify that adding reduce to the payload doesn't pose a problem
         // futuresAvgPrice: (payload: { symbol?: string }) => Promise<FMarkPrice>;
-        futuresBookTicker: (payload: { symbol?: string, reduce?: boolean }, agent?: Agent) => Promise<FBookTicker | FBookTicker[] | FReducedBookTicker>;
-        futuresAllForceOrders: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number }, agent?: Agent) => Promise<FForceOrder | FForceOrder[]>;
-        futuresOpenInterest: (payload: { symbol: string }, agent?: Agent) => Promise<FOpenInterest>;
-        futuresLeverageBracket: (payload: { symbol?: string }, agent?: Agent) => Promise<FLeverageBrackets | FLeverageBrackets[] | FReducedLeverageBrackets>;
-        futuresAccountTransfer: (payload: { asset: string, amount: number, type: number, recvWindow?: number }, agent?: Agent) => Promise<FAccountTransfer>;
+        futuresBookTicker: (payload: { symbol?: string, reduce?: boolean, recvWindow?: number }, agent?: Agent) => Promise<FBookTicker | FBookTicker[] | FReducedBookTicker>;
+        futuresAllForceOrders: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FForceOrder | FForceOrder[]>;
+        futuresOpenInterest: (payload: { symbol: string, recvWindow?: number }, agent?: Agent) => Promise<FOpenInterest>;
+        futuresLeverageBracket: (payload: { symbol?: string, recvWindow?: number }, agent?: Agent) => Promise<FLeverageBrackets | FLeverageBrackets[] | FReducedLeverageBrackets>;
+        futuresAccountTransfer: (payload: { asset: string, amount: number, type: number, recvWindow?: number, recvWindow?: number }, agent?: Agent) => Promise<FAccountTransfer>;
         futuresAccountTransactionHistory: (payload: { asset: string, startTime: number, endTime?: number, current?: number, size?: number, recvWindow?: number }, agent?: Agent) => Promise<FAccountTransferHistory>;
-        futuresOrder: (payload: FNewOrder, agent?: Agent) => Promise<FOrder>;
-        futuresOrderTest: (payload: { symbol?: string }, agent?: Agent) => Promise<FMarkPrice>;
+        futuresOrder: (payload: FNewOrder & { recvWindow?: number }, agent?: Agent) => Promise<FOrder>;
+        futuresOrderTest: (payload: { symbol?: string, recvWindow?: number }, agent?: Agent) => Promise<FMarkPrice>;
         futuresGetOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow?: number }, agent?: Agent) => Promise<FOrderState>;
         futuresCancelOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow?: number }, agent?: Agent) => Promise<FOrder>;
         futuresCancelAllOpenOrders: (payload: { symbol: string, recvWindow?: number }, agent?: Agent) => Promise<FCancelAllOrderResp>;
