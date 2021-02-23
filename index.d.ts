@@ -419,8 +419,8 @@ declare module 'binance-client' {
         futuresAggTrades: (payload: { symbol: string, fromId?: string, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FAggregatedTrade[]>;
         futuresCandles: (payload: FCandlesOptions & { recvWindow?: number }, agent?: Agent) => Promise<FCandleChartResult[]>;
         // ______________ futures exclusive
-        futuresChangePositionMode(payload: { dualSidePosition: boolean, recvWindow?: number })
-        futuresGetPositionMode(payload: { recvWindow?: number })
+        futuresChangePositionMode: (payload: { dualSidePosition: boolean, recvWindow?: number }) => Promise<{ code: number, msg: string }>;
+        futuresGetPositionMode: (payload: { recvWindow?: number }) => Promise<{ dualSidePosition: boolean }>;
         futuresMarkPrice: (payload: { symbol?: string, recvWindow?: number }, agent?: Agent) => Promise<FMarkPrice>;
         futuresFundingRate: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FFundingRate>;
         futuresDailyStats: (payload: { symbol?: string, recvWindow?: number }, agent?: Agent) => Promise<FDailyState>;
@@ -433,12 +433,14 @@ declare module 'binance-client' {
         futuresLeverageBracket: (payload: { symbol?: string, recvWindow?: number }, agent?: Agent) => Promise<FLeverageBrackets | FLeverageBrackets[] | FReducedLeverageBrackets>;
         futuresAccountTransfer: (payload: { asset: string, amount: number, type: number, recvWindow?: number, recvWindow?: number }, agent?: Agent) => Promise<FAccountTransfer>;
         futuresAccountTransactionHistory: (payload: { asset: string, startTime: number, endTime?: number, current?: number, size?: number, recvWindow?: number }, agent?: Agent) => Promise<FAccountTransferHistory>;
-        futuresOrder: (payload: FNewOrder & { recvWindow?: number }, agent?: Agent) => Promise<FOrder>;
+        futuresOrder: (payload: FNewOrder & { recvWindow?: number }, agent?: Agent) => Promise<FOrder|HttpError>;
         futuresOrderTest: (payload: { symbol?: string, recvWindow?: number }, agent?: Agent) => Promise<FMarkPrice>;
+        futuresBatchOrders: (payload: { batchOrders: FNewOrder[], recvWindow?: number }, agent?: Agent) => Promise<(FOrder|HttpError)[]>;
         futuresGetOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow?: number }, agent?: Agent) => Promise<FOrderState>;
         futuresCancelOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow?: number }, agent?: Agent) => Promise<FOrder>;
         futuresCancelAllOpenOrders: (payload: { symbol: string, recvWindow?: number }, agent?: Agent) => Promise<FCancelAllOrderResp>;
-        futuresCancelMultipleOrders: (payload: { symbol: string, orderIdList?: number[], origClientOrderIdList?: number[], recvWindow?: number }, agent?: Agent) => Promise<(FOrder | FCancelAllOrderResp)[]>;
+        futuresCancelMultipleOrders: (payload: { symbol: string, orderIdList?: number[], origClientOrderIdList?: number[], recvWindow?: number }, agent?: Agent) => Promise<(FOrder|HttpError)[]>;
+        futuresCountDownCancelAllOrders: (payload: { symbol: string, countdownTime: number, recvWindow?: number }, agent?: Agent) => Promise<FCancelAllOrderResp>;
         futuresGetOpenOrder: (payload: { symbol: string, orderId?: number, origClientOrderId?: string, recvWindow?: number}, agent?: Agent) => Promise<FOrderState>;
         futuresGetAllOpenOrders: (payload: { symbol: string, recvWindow?: number }, agent?: Agent) => Promise<FOrderState[]>;
         futuresGetAllOrders: (payload: { symbol: string, orderId?: number, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FOrderState[]>;
@@ -730,36 +732,46 @@ declare module 'binance-client' {
 
     interface FOrder {
         clientOrderId: string;
+        cumQty: string;
+        cumQuote: string;
         executedQty: string;
         orderId: number;
         origQty: string;
+        avgPrice: string;
         price: string;
         reduceOnly: boolean;
         side: FOrderSide;
+        positionSide: FPositionSide;
         status: FOrderStatus;
         stopPrice?: string;
+        closePosition: boolean;
         symbol: string;
         timeInForce: FTimeInForce;
         type: FOrderType;
-        activatePrice: string,
-        priceRate: string,
-        updateTime: number,
+        origType: FOrderType;
+        activatePrice: string;
+        priceRate: string;
+        updateTime: number;
         workingType: FOrderWorkingType;
+        priceProtect: boolean;
     }
 
     export interface FNewOrder {
         symbol: string,
         side: FOrderSide,
+        positionSide?: FPositionSide,
         type: FOrderType,
         timeInForce?: FTimeInForce,
         quantity: number,
-        reduceOnly?: "true" | "false",
+        reduceOnly?: boolean,
         price?: number,
         newClientOrderId?: string,
         stopPrice?: number,
+        closePosition?: boolean,
         activationPrice?: number,
         callbackRate?: number,
         workingType?: FOrderWorkingType,
+        newOrderRespType?: FOrderRespType,
         recvWindow?: number
     }
 
@@ -935,6 +947,8 @@ declare module 'binance-client' {
     export type OrderSide = 'BUY' | 'SELL';
     export type FOrderSide = OrderSide;
 
+    export type FPositionSide = 'BOTH' | 'LONG' | 'SHORT';
+
     export type OrderStatus =
         | 'CANCELED'
         | 'EXPIRED'
@@ -973,6 +987,8 @@ declare module 'binance-client' {
     export type FOrderWorkingType =
         | 'MARK_PRICE'
         | 'CONTRACT_PRICE';
+
+    export type FOrderRespType = 'ACK', 'RESULT';
 
     export type NewOrderRespType = 'ACK' | 'RESULT' | 'FULL';
 

@@ -364,6 +364,7 @@ export default opts => {
     // ______________ futures exclusive
     futuresChangePositionMode: (payload, agent) => checkParams('futuresChangePositionMode', payload, ['dualSidePosition']) && futuresPrivCall({ path: '/v1/positionSide/dual', data: { ...payload, dualSidePosition: payload.dualSidePosition? 'true': 'false'}, method: 'POST',  agent }),
     futuresGetPositionMode: (payload, agent) => futuresPrivCall({ path: '/v1/positionSide/dual', data: payload, method: 'GET', agent }),
+
     futuresMarkPrice: (payload, agent) => futuresPubCall({ path: '/v1/premiumIndex', data: payload, method: 'GET', agent }),
     futuresFundingRate: (payload, agent) => checkParams('futuresFundingRate', payload, ['symbol']) && futuresKCall({ path: '/v1/fundingRate', data: payload, method: 'GET', agent }),
     futuresDailyStats: (payload, agent) => futuresPubCall({ path: '/v1/ticker/24hr', data: payload, method: 'GET', agent }),
@@ -397,10 +398,12 @@ export default opts => {
     futuresAccountTransactionHistory: (payload, agent) => checkParams('futuresAccountTransactionHistory', payload, ['asset', 'startTime']) && privCall({ path: '/sapi/v1/futures/transfer', data: payload, method: 'GET', agent }),
     futuresOrder: (payload, agent) => futuresOrder(futuresPrivCall, payload, '/v1/order', agent),
     futuresOrderTest: (payload, agent) => futuresOrder(futuresPrivCall, payload, '/v3/order/test', agent), // TODO: remove
+    futuresBatchOrders: (payload, agent) => checkParams('futuresBatchOrders', payload, ['batchOrders']) && futuresPrivCall({ path: '/v1/batchOrders', data: payload, method: 'POST', agent }),
     futuresGetOrder: (payload, agent) => checkParams('futuresQueryOrder', payload, ['symbol']) && futuresPrivCall({ path: '/v1/order', data: payload, agent }),
     futuresCancelOrder: (payload, agent) => checkParams('futuresCancelOrder', payload, ['symbol']) && futuresPrivCall({ path: '/v1/order', data: payload, method: 'DELETE', agent }),
     futuresCancelAllOpenOrders: (payload, agent) => checkParams('futuresCancelOrder', payload, ['symbol']) && futuresPrivCall({ path: '/v1/allOpenOrders', data: payload, method: 'DELETE', agent }),
-    futuresCancelMultipleOrders: (payload, agent) => checkParams('futuresCancelMultipleOrders', payload, ['symbol']) && futuresPrivCall({ path: '/v1/batchOrders', data: payload, method: 'GET', agent }),
+    futuresCancelMultipleOrders: (payload, agent) => checkParams('futuresCancelMultipleOrders', payload, ['symbol']) && futuresPrivCall({ path: '/v1/batchOrders', data: payload, method: 'DELETE', agent }),
+    futuresCountDownCancelAllOrders: (payload, agent) => checkParams('futuresCountDownCancelAllOrders', payload, ['symbol', 'countdownTime']) && futuresPrivCall({ path: '/v1/countdownCancelAll', data: payload, method: 'POST', agent }),
     futuresGetOpenOrder: (payload, agent) => checkParams('futuresGetOpenOrder', payload, ['symbol']) && futuresPrivCall({ path: '/v1/openOrder', data: payload, method: 'GET', agent }),
     futuresGetAllOpenOrders: (payload, agent) => futuresPrivCall({ path: '/v1/openOrders', data: payload, method: 'GET', agent }),
     futuresGetAllOrders: (payload, agent) => checkParams('futuresGetAllOrders', payload, ['symbol']) && futuresPrivCall({ path: '/v1/allOrders', data: payload, method: 'GET', agent }),
