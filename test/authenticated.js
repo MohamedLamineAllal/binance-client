@@ -146,7 +146,7 @@ test('[REST] error code', async t => {
       side: 'SELL',
       type: 'LIMIT',
       quantity: '-1337.00000000',
-      price: '1.00000000',
+      price: '1.00000000'
     })
   } catch (e) {
     t.is(e.code, -1100)

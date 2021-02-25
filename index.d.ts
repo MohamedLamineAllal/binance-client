@@ -419,8 +419,8 @@ declare module 'binance-client' {
         futuresAggTrades: (payload: { symbol: string, fromId?: string, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FAggregatedTrade[]>;
         futuresCandles: (payload: FCandlesOptions & { recvWindow?: number }, agent?: Agent) => Promise<FCandleChartResult[]>;
         // ______________ futures exclusive
-        futuresChangePositionMode: (payload: { dualSidePosition: boolean, recvWindow?: number }) => Promise<{ code: number, msg: string }>;
-        futuresGetPositionMode: (payload: { recvWindow?: number }) => Promise<{ dualSidePosition: boolean }>;
+        futuresChangePositionMode: (payload: { dualSidePosition: boolean, recvWindow?: number }, agent?: Agent) => Promise<{ code: number, msg: string }>;
+        futuresGetPositionMode: (payload: { recvWindow?: number }, agent?: Agent) => Promise<{ dualSidePosition: boolean }>;
         futuresMarkPrice: (payload: { symbol?: string, recvWindow?: number }, agent?: Agent) => Promise<FMarkPrice>;
         futuresFundingRate: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FFundingRate>;
         futuresDailyStats: (payload: { symbol?: string, recvWindow?: number }, agent?: Agent) => Promise<FDailyState>;
