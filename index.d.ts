@@ -1013,7 +1013,7 @@ declare module 'binance-client' {
         | 'MARK_PRICE'
         | 'CONTRACT_PRICE';
 
-    export type FOrderRespType = 'ACK', 'RESULT';
+    export type FOrderRespType = 'ACK' | 'RESULT';
 
     export type NewOrderRespType = 'ACK' | 'RESULT' | 'FULL';
 
