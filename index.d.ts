@@ -650,21 +650,45 @@ declare module 'binance-client' {
         baseAssetPrecision: number;
         quoteAsset: string;
         quotePrecision: number;
+        quoteAssetPrecision: number;
+        baseCommissionPrecision: number;
+        quoteCommissionPrecision: number;
         orderTypes: OrderType[];
         icebergAllowed: boolean;
+        ocoAllowed: boolean,
+        quoteOrderQtyMarketAllowed: boolean,
+        isSpotTradingAllowed: boolean,
+        isMarginTradingAllowed: boolean,
         filters: SymbolFilter[];
+        permissions: string[]; // TODO: change type to 'SPOT'|'MARGIN'
     }
 
+
+    export type FContractType = 'PERPETUAL' | 'CURRENT_MONTH' | 'NEXT_MONTH';
+
     export interface FSymbol {
-        filters: FSymbolFilter,
+        symbol: string,
+        status: string,
+        pair: string,
+        baseAsset: string,
+        quoteAsset: string,
+        marginAsset: string,
+        contractType: FContractType,
+        deliveryDate: number,
+        onboardDate: number,
         maintMarginPercent: string,
+        requiredMarginPercent: string,
         pricePrecision: number,
         quantityPrecision: number,
-        requiredMarginPercent: string,
-        status: string,
-        OrderType: FOrderType,
-        symbol: string,
-        timeInForce: FTimeInForce
+        baseAssetPrecision: number,
+        quotePrecision: number,
+        underlyingType: string,
+        underlyingSubType: string[],
+        settlePlan: number,
+        triggerProtect: string,
+        OrderType: FOrderType[],
+        timeInForce: FTimeInForce[],
+        filters: FSymbolFilter,
     }
 
     export interface ExchangeInfo {

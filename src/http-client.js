@@ -302,7 +302,7 @@ export default opts => {
     // _______________________________________ normal binance api
     ping: (agent) => pubCall({ path: '/v1/ping', agent }).then(() => true),
     time: (agent) => pubCall({ path: '/v1/time', agent }).then(r => r.serverTime),
-    exchangeInfo: (agent) => pubCall({ path: '/v1/exchangeInfo', agent }),
+    exchangeInfo: (agent) => pubCall({ path: '/v3/exchangeInfo', agent }),
     book: (payload, agent) => checkParams('book', payload, ['symbol']) && book(pubCall, payload, agent),
     trades: (payload, agent) => checkParams('trades', payload, ['symbol']) && pubCall({ path: '/v1/trades', data: payload,  agent }).then(
       trades => renameProps(trades, { qty: 'quantity'})
