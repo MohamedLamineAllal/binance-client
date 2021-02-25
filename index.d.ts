@@ -47,6 +47,7 @@ declare module 'binance-client' {
     }
 
     export interface Account {
+        accountType: string,
         balances: AssetBalance[];
         buyerCommission: number;
         canDeposit: boolean;
