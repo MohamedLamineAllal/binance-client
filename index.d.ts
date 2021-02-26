@@ -981,12 +981,12 @@ declare module 'binance-client' {
     export type FPositionSide = 'BOTH' | 'LONG' | 'SHORT';
 
     export type OrderStatus =
-        | 'CANCELED'
-        | 'EXPIRED'
-        | 'FILLED'
         | 'NEW'
         | 'PARTIALLY_FILLED'
-        | 'PENDING_CANCEL'
+        | 'FILLED'
+        | 'CANCELED'
+        // | 'PENDING_CANCEL' // No more used
+        | 'EXPIRED'
         | 'REJECTED';
 
     export type FOrderStatus =
