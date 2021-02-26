@@ -812,6 +812,7 @@ declare module 'binance-client' {
         origQty: string;
         price: string;
         side: FOrderSide;
+        positionSide: FPositionSide;
         type: FOrderType;
         origType: FOrderType;
         status: FOrderStatus;
