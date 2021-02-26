@@ -801,25 +801,28 @@ declare module 'binance-client' {
     }
 
     export interface FOrderState {
-        avgPrice: string,
-        clientOrderId: string;
-        executedQty: string;
-        orderId: number;
-        origQty: string;
-        origType: FOrderType,
-        price: string;
-        reduceOnly: boolean;
-        side: FOrderSide;
-        status: FOrderStatus;
-        stopPrice?: string;
         symbol: string;
-        time: number,
-        timeInForce: FTimeInForce;
+        orderId: number;
+        clientOrderId: string;
+        avgPrice: string;
+        cumQuote: string;
+        executedQty: string;
+        origQty: string;
+        price: string;
+        side: FOrderSide;
         type: FOrderType;
-        activatePrice: string,
-        priceRate: string,
-        updateTime: number,
+        origType: FOrderType;
+        status: FOrderStatus;
+        reduceOnly: boolean;
+        stopPrice?: string;
+        closePosition: boolean;
+        timeInForce: FTimeInForce;
+        activatePrice: string;
+        priceRate: string;
+        time: number;
+        updateTime: number;
         workingType: FOrderWorkingType;
+        priceProtect: boolean;
     }
 
     interface FCancelAllOrderResp {
