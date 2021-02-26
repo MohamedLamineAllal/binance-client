@@ -739,19 +739,21 @@ declare module 'binance-client' {
     }
 
     interface Order {
-        clientOrderId: string;
-        executedQty: string;
-        icebergQty?: string;
-        orderId: number;
-        origQty: string;
-        price: string;
-        side: OrderSide;
-        status: OrderStatus;
-        stopPrice?: string;
         symbol: string;
-        timeInForce: TimeInForce;
-        transactTime: number;
-        type: OrderType;
+        orderId: number;
+        clientOrderId: string;
+        orderListId?: number;
+        executedQty?: string;
+        cummulativeQuoteQty?: string;
+        icebergQty?: string;
+        origQty?: string;
+        price?: string;
+        side?: OrderSide;
+        status?: OrderStatus;
+        type?: OrderType;
+        stopPrice?: string;
+        timeInForce?: TimeInForce;
+        transactTime?: number;
         fills?: OrderFill[];
     }
 
@@ -1294,29 +1296,40 @@ declare module 'binance-client' {
     }
 
     interface QueryOrderResult {
+        symbol: string;
+        orderId: number;
+        orderListId: number;
         clientOrderId: string;
-        cummulativeQuoteQty: string,
+        origQty: string;
         executedQty: string;
         icebergQty: string;
-        isWorking: boolean;
-        orderId: number;
-        origQty: string;
+        cummulativeQuoteQty: string;
+        origQuoteOrderQty: string;
         price: string;
         side: OrderSide;
         status: OrderStatus;
+        type: string;
         stopPrice: string;
-        symbol: string;
         time: number;
         timeInForce: TimeInForce;
-        type: string;
         updateTime: number;
+        isWorking: boolean;
     }
 
     interface CancelOrderResult {
         symbol: string;
-        origClientOrderId: string;
         orderId: number;
+        origClientOrderId: string;
+        orderListId: number;
         clientOrderId: string;
+        price: string;
+        origQty: string;
+        executedQty: string,
+        cummulativeQuoteQty: string,
+        side: string,
+        type: string,
+        status: string,
+        timeInForce: string
     }
 
     export interface AvgPriceResult {
