@@ -1330,7 +1330,7 @@ declare module 'binance-client' {
         side: 'BUY' | 'SELL',
         type: string,
         status: OrderStatus,
-        timeInForce: string
+        timeInForce: TimeInForce
     }
 
     export interface AvgPriceResult {
