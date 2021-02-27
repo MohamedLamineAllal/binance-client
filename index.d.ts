@@ -717,7 +717,7 @@ declare module 'binance-client' {
     export type FOrderBook = OrderBook;
 
     export interface NewOrder {
-        icebergQty?: string;
+        icebergQty?: number;
         newClientOrderId?: string;
         price?: number;
         quantity: number;
