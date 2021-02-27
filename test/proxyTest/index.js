@@ -56,7 +56,7 @@ test('[REST] book (Proxy)', async t => {
 
     const [bid] = book.bids
     t.truthy(typeof bid.price === 'string')
-    t.truthy(typeof bid.quantity === 'string')
+    t.truthy(typeof bid.qty === 'string')
 })
 
 test('[REST] candles (Proxy)', async t => {

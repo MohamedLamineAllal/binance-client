@@ -70,7 +70,7 @@ declare module 'binance-client' {
     export interface AggregatedTrade {
         aggId: number;
         price: string;
-        quantity: string;
+        qty: string;
         firstId: number;
         lastId: number;
         time: number;
@@ -82,7 +82,7 @@ declare module 'binance-client' {
     interface Trade {
         id: number,
         price: string,
-        quantity: string,
+        qty: string,
         quoteQty: string,
         time: number,
         isBuyerMaker: boolean,
@@ -92,7 +92,7 @@ declare module 'binance-client' {
     interface FTrade {
         id: number,
         price: string,
-        quantity: string,
+        qty: string,
         quoteQty: string,
         time: number,
         isBuyerMaker: boolean
@@ -720,7 +720,7 @@ declare module 'binance-client' {
         icebergQty?: string;
         newClientOrderId?: string;
         price?: string;
-        quantity: string;
+        quantity: number;
         recvWindow?: number;
         side: OrderSide;
         stopPrice?: string;
@@ -733,7 +733,7 @@ declare module 'binance-client' {
 
     interface OrderFill {
         price: string;
-        quantity: string;
+        qty: string;
         commission: string;
         commissionAsset: string;
     }
@@ -1069,7 +1069,7 @@ declare module 'binance-client' {
 
     interface BidDepth {
         price: string;
-        quantity: string;
+        qty: string;
     }
 
     interface PartialDepth {
@@ -1106,7 +1106,7 @@ declare module 'binance-client' {
 
     interface Bid {
         price: string;
-        quantity: string;
+        qty: string;
     }
 
     interface Ticker {
@@ -1118,7 +1118,7 @@ declare module 'binance-client' {
         weightedAvg: string;
         prevDayClose: string;
         curDayClose: string;
-        closeTradeQuantity: string;
+        closeTradeQty: string;
         bestBid: string;
         bestBidQnt: string;
         bestAsk: string;
@@ -1143,7 +1143,7 @@ declare module 'binance-client' {
         priceChangePercent: string;
         weightedAvgPrice: string;
         lastPrice: string,
-        lastQuantity: string,    
+        lastQty: string,    
         open: string;
         high: string;
         low: string;
@@ -1210,12 +1210,12 @@ declare module 'binance-client' {
         side: string,
         orderType: string,
         timeInForce: string,
-        quantity: string,
+        qty: string,
         price: string,
         averagePrice: string,
         status: string,
-        lastFilledQuantity: string,
-        filledAccumulatedQuantity: string,
+        lastFilledQty: string,
+        filledAccumulatedQty: string,
         tradeTime: number
     }
 
@@ -1251,17 +1251,17 @@ declare module 'binance-client' {
         side: OrderSide;
         orderType: OrderType;
         timeInForce: TimeInForce;
-        quantity: string;
+        qty: string;
         price: string;
         executionType: ExecutionType;
         stopPrice: string;
-        icebergQuantity: string;
+        icebergQty: string;
         orderStatus: OrderStatus;
         orderRejectReason: string;
         orderId: number;
         orderTime: number;
-        lastTradeQuantity: string;
-        totalTradeQuantity: string;
+        lastTradeQty: string;
+        totalTradeQty: string;
         priceLastTrade: string;
         commission: string;
         commissionAsset: string;
@@ -1273,7 +1273,7 @@ declare module 'binance-client' {
     export interface TradeResult {
         id: number;
         price: string;
-        quantity: string;
+        qty: string;
         time: number;
         isBuyerMaker: boolean;
         isBestMatch: boolean;
@@ -1286,7 +1286,7 @@ declare module 'binance-client' {
         orderId: number;
         orderListId: number;
         price: string;
-        quantity: string;
+        qty: string;
         quoteQty: string;
         commission: string;
         commissionAsset: string;
@@ -1401,7 +1401,7 @@ declare module 'binance-client' {
         symbol: string;
         tradeId: number;
         price: string;
-        quantity: string;
+        qty: string;
         // buyerOrderId: number;
         // sellerOrderId: number; // TODO: check if exists
         tradeTime: number;
@@ -1415,7 +1415,7 @@ declare module 'binance-client' {
         symbol: string;
         tradeId: number;
         price: string;
-        quantity: string;
+        qty: string;
         tradeTime: number;
         isBuyerMaker: boolean;
     }
@@ -1426,7 +1426,7 @@ declare module 'binance-client' {
         symbol: string;
         aggId: number;
         price: string;
-        quantity: string;
+        qty: string;
         firstTradeId: number;
         lastTradeId: number;
         tradeTime: number;
@@ -1440,7 +1440,7 @@ declare module 'binance-client' {
         symbol: string;
         aggId: number;
         price: string;
-        quantity: string;
+        qty: string;
         firstTradeId: number;
         lastTradeId: number;
         tradeTime: number;

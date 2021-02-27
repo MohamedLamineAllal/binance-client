@@ -48,7 +48,7 @@ const aggTradesOutputMapping = (d) => ({
   symbol: d.s,
   aggId: d.a,
   price: d.p,
-  quantity: d.q,
+  qty: d.q,
   firstTradeId: d.f,
   lastTradeId: d.l,
   tradeTime: d.T,
@@ -64,7 +64,7 @@ const tradesOutputMapping = (d) => ({
   symbol: d.s,
   tradeId: d.t,
   price: d.p,
-  quantity: d.q,
+  qty: d.q,
   tradeTime: d.T,
   isBuyerMaker: d.m
 })
@@ -289,7 +289,7 @@ const tickerTransform = m => ({
   priceChangePercent: m.P,
   weightedAvgPrice: m.w,
   lastPrice: m.c,
-  lastQuantity: m.Q,
+  lastQty: m.Q,
   open: m.o,
   high: m.h,
   low: m.l,
@@ -394,12 +394,12 @@ const liquidationOrderTransform = ({
     side: o.S,
     orderType: o.o,
     timeInForce: o.f,
-    quantity: o.q,
+    qty: o.q,
     price: o.p,
     averagePrice: o.ap,
     status: o.X,
-    lastFilledQuantity: o.l,
-    filledAccumulatedQuantity: o.z,
+    lastFilledQty: o.l,
+    filledAccumulatedQty: o.z,
     tradeTime: o.T
   }
 });
@@ -436,8 +436,8 @@ const partialDepth = (payload, cb) => {
       finalUpdateId,
       transactionTime,
       lastUpdateIdInLastStream,
-      bidDepth: bidDepth.map(b => zip(['price', 'quantity'], b)),
-      askDepth: askDepth.map(a => zip(['price', 'quantity'], a)),
+      bidDepth: bidDepth.map(b => zip(['price', 'qty'], b)),
+      askDepth: askDepth.map(a => zip(['price', 'qty'], a)),
     })
 
     return {
@@ -479,8 +479,8 @@ const depth = (payload, cb) => {
       finalUpdateId,
       transactionTime,
       lastUpdateIdInLastStream,
-      bidDepth: bidDepth.map(b => zip(['price', 'quantity'], b)),
-      askDepth: askDepth.map(a => zip(['price', 'quantity'], a)),
+      bidDepth: bidDepth.map(b => zip(['price', 'qty'], b)),
+      askDepth: askDepth.map(a => zip(['price', 'qty'], a)),
     })
   }
 

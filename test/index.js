@@ -50,7 +50,7 @@ test('[REST] book', async t => {
 
   const [bid] = book.bids
   t.truthy(typeof bid.price === 'string')
-  t.truthy(typeof bid.quantity === 'string')
+  t.truthy(typeof bid.qty === 'string')
 })
 
 test('[REST] candles', async t => {
@@ -255,7 +255,7 @@ test('[WS] candles', t => {
 test('[WS] trades', t => {
   return new Promise(resolve => {
     client.ws.trades(['BNBBTC', 'ETHBTC', 'BNTBTC'], trade => {
-      checkFields(t, trade, ['eventType', 'tradeId', 'quantity', 'price', 'symbol'])
+      checkFields(t, trade, ['eventType', 'tradeId', 'qty', 'price', 'symbol'])
       resolve()
     })
   })
@@ -264,7 +264,7 @@ test('[WS] trades', t => {
 test('[WS] aggregate trades', t => {
   return new Promise(resolve => {
     client.ws.aggTrades(['BNBBTC', 'ETHBTC', 'BNTBTC'], trade => {
-      checkFields(t, trade, ['eventType', 'aggId', 'quantity', 'price', 'symbol'])
+      checkFields(t, trade, ['eventType', 'aggId', 'qty', 'price', 'symbol'])
       resolve()
     })
   })
@@ -376,17 +376,17 @@ test('[WS] userEvents', t => {
       side: 'BUY',
       orderType: 'LIMIT',
       timeInForce: 'GTC',
-      quantity: '1.00000000',
+      qty: '1.00000000',
       price: '0.10264410',
       stopPrice: '0.10285410',
       executionType: 'NEW',
-      icebergQuantity: '0.00000000',
+      icebergQty: '0.00000000',
       orderStatus: 'NEW',
       orderRejectReason: 'NONE',
       orderId: 4293153,
       orderTime: 1499405658657,
-      lastTradeQuantity: '0.00000000',
-      totalTradeQuantity: '0.00000000',
+      lastTradeQty: '0.00000000',
+      totalTradeQty: '0.00000000',
       priceLastTrade: '0.00000000',
       commission: '0',
       commissionAsset: null,
@@ -394,7 +394,7 @@ test('[WS] userEvents', t => {
       isOrderWorking: true,
       isBuyerMaker: false,
       creationTime: 1499405658657,
-      totalQuoteTradeQuantity: '0.00000000',
+      totalQuoteTradeQty: '0.00000000',
     })
   })({ data: JSON.stringify(orderPayload) })
 
@@ -441,17 +441,17 @@ test('[WS] userEvents', t => {
       side: 'BUY',
       orderType: 'LIMIT',
       timeInForce: 'GTC',
-      quantity: '22.42906458',
+      qty: '22.42906458',
       price: '0.10279999',
       stopPrice: '0.10280001',
       executionType: 'TRADE',
-      icebergQuantity: '0.00000000',
+      icebergQty: '0.00000000',
       orderStatus: 'FILLED',
       orderRejectReason: 'NONE',
       orderId: 4294220,
       orderTime: 1499406026402,
-      lastTradeQuantity: '17.42906458',
-      totalTradeQuantity: '22.42906458',
+      lastTradeQty: '17.42906458',
+      totalTradeQty: '22.42906458',
       priceLastTrade: '0.10279999',
       commission: '0.00000001',
       commissionAsset: 'BNC',
@@ -459,7 +459,7 @@ test('[WS] userEvents', t => {
       isOrderWorking: false,
       isBuyerMaker: false,
       creationTime: 1499405658657,
-      totalQuoteTradeQuantity: '2.30570761',
+      totalQuoteTradeQty: '2.30570761',
     })
   })({ data: JSON.stringify(tradePayload) })
 

@@ -73,43 +73,56 @@ Following examples will use the `await` form, which requires some configuration 
 
 ### Table of Contents
 
-- [Public REST Endpoints](#public-rest-endpoints)
-    - [ping](#ping)
-    - [time](#time)
-    - [exchangeInfo](#exchangeinfo)
-    - [book](#book)
-    - [candles](#candles)
-    - [aggTrades](#aggtrades)
-    - [trades](#trades)
-    - [dailyStats](#dailystats)
-    - [avgPrice](#avgPrice)
-    - [prices](#prices)
-    - [allBookTickers](#allbooktickers)
-- [Authenticated REST Endpoints](#authenticated-rest-endpoints)
-    - [order](#order)
-    - [orderTest](#ordertest)
-    - [getOrder](#getorder)
-    - [cancelOrder](#cancelorder)
-    - [openOrders](#openorders)
-    - [allOrders](#allorders)
-    - [accountInfo](#accountinfo)
-    - [myTrades](#mytrades)
-    - [tradesHistory](#tradeshistory)
-    - [depositHistory](#deposithistory)
-    - [withdrawHistory](#withdrawhistory)
-    - [withdraw](#withdraw)
-    - [depositAddress](#depositaddress)
-    - [tradeFee](#tradefee)
-- [Websockets](#websockets)
-    - [depth](#depth)
-    - [partialDepth](#partialdepth)
-    - [ticker](#ticker)
-    - [allTickers](#alltickers)
-    - [candles](#candles-1)
-    - [aggTrades](#aggtrades-1)
-    - [trades](#trades-1)
-    - [user](#user)
-- [ErrorCodes](#errorcodes)
+- [binance-client](#binance-client)
+- [DOC](#doc)
+    - [Installation](#installation)
+    - [Getting started](#getting-started)
+    - [Table of Contents](#table-of-contents)
+    - [Public REST Endpoints](#public-rest-endpoints)
+      - [ping](#ping)
+      - [time](#time)
+      - [exchangeInfo](#exchangeinfo)
+      - [book](#book)
+      - [candles](#candles)
+      - [aggTrades](#aggtrades)
+      - [trades](#trades)
+      - [dailyStats](#dailystats)
+      - [avgPrice](#avgprice)
+      - [prices](#prices)
+      - [allBookTickers](#allbooktickers)
+    - [Authenticated REST Endpoints](#authenticated-rest-endpoints)
+      - [order](#order)
+      - [orderTest](#ordertest)
+      - [getOrder](#getorder)
+      - [cancelOrder](#cancelorder)
+      - [openOrders](#openorders)
+      - [allOrders](#allorders)
+      - [accountInfo](#accountinfo)
+      - [myTrades](#mytrades)
+      - [tradesHistory](#tradeshistory)
+      - [depositHistory](#deposithistory)
+      - [withdrawHistory](#withdrawhistory)
+      - [withdraw](#withdraw)
+      - [depositAddress](#depositaddress)
+      - [tradeFee](#tradefee)
+    - [WebSockets](#websockets)
+      - [depth](#depth)
+      - [partialDepth](#partialdepth)
+      - [ticker](#ticker)
+      - [allTickers](#alltickers)
+      - [candles](#candles-1)
+      - [trades](#trades-1)
+      - [aggTrades](#aggtrades-1)
+      - [user](#user)
+    - [ErrorCodes](#errorcodes)
+  - [Binance futures](#binance-futures)
+    - [Futures Websocket](#futures-websocket)
+      - [Normal streams](#normal-streams)
+        - [Event description and info](#event-description-and-info)
+          - [MARGIN_CALL](#margin_call)
+          - [ACCOUNT_UPDATE](#account_update)
+          - [ACCOUNT_ORDER_UPDATE](#account_order_update)
+  - [Using proxy](#using-proxy)
 
 ### Public REST Endpoints
 
@@ -224,13 +237,13 @@ console.log(await client.book({ symbol: 'ETHBTC' }))
   lastUpdateId: 17647759,
   asks:
    [
-     { price: '0.05411500', quantity: '5.55000000' },
-     { price: '0.05416700', quantity: '11.80100000' }
+     { price: '0.05411500', qty: '5.55000000' },
+     { price: '0.05416700', qty: '11.80100000' }
    ],
   bids:
    [
-     { price: '0.05395500', quantity: '2.70000000' },
-     { price: '0.05395100', quantity: '11.84100000' }
+     { price: '0.05395500', qty: '2.70000000' },
+     { price: '0.05395100', qty: '11.84100000' }
    ]
 }
 ```
@@ -300,7 +313,7 @@ Note: If `frondId`, `startTime`, and `endTime` are not sent, the most recent agg
 [{
   aggId: 2107132,
   price: '0.05390400',
-  quantity: '1.31000000',
+  qty: '1.31000000',
   firstId: 2215345,
   lastId: 2215345,
   time: 1508478599481,
@@ -477,7 +490,7 @@ Creates a new order.
 console.log(await client.order({
   symbol: 'XLMETH',
   side: 'BUY',
-  quantity: 100,
+  qty: 100,
   price: 0.0002,
 }))
 ```
@@ -756,7 +769,7 @@ console.log(await client.myTrades({
   id: 9960,
   orderId: 191939,
   price: '0.00138000',
-  quantity: '10.00000000',
+  qty: '10.00000000',
   commission: '0.00001380',
   commissionAsset: 'ETH',
   time: 1508611114735,
@@ -789,11 +802,11 @@ console.log(await client.tradesHistory({ symbol: 'ETHBTC' }))
 [
   {
     "id": 28457,
-      "price": "4.00000100",
-      "quantity": "12.00000000",
-      "time": 1499865549590,
-      "isBuyerMaker": true,
-      "isBestMatch": true
+    "price": "4.00000100",
+    "quantity": "12.00000000",
+    "time": 1499865549590,
+    "isBuyerMaker": true,
+    "isBestMatch": true
   }
 ]
 ```
@@ -1009,12 +1022,12 @@ client.ws.depth('ETHBTC', depth => {
   firstUpdateId: 18331140,
   finalUpdateId: 18331145,
   bidDepth: [
-    { price: '0.04896500', quantity: '0.00000000' },
-    { price: '0.04891100', quantity: '15.00000000' },
-    { price: '0.04891000', quantity: '0.00000000' } ],
+    { price: '0.04896500', qty: '0.00000000' },
+    { price: '0.04891100', qty: '15.00000000' },
+    { price: '0.04891000', qty: '0.00000000' } ],
   askDepth: [
-    { price: '0.04910600', quantity: '0.00000000' },
-    { price: '0.04910700', quantity: '11.24900000' }
+    { price: '0.04910600', qty: '0.00000000' },
+    { price: '0.04910700', qty: '11.24900000' }
   ]
 }
 ```
@@ -1040,13 +1053,13 @@ client.ws.partialDepth({ symbol: 'ETHBTC', level: 10 }, depth => {
   symbol: 'ETHBTC',
   level: 10,
   bids: [
-    { price: '0.04896500', quantity: '0.00000000' },
-    { price: '0.04891100', quantity: '15.00000000' },
-    { price: '0.04891000', quantity: '0.00000000' }
+    { price: '0.04896500', qty: '0.00000000' },
+    { price: '0.04891100', qty: '15.00000000' },
+    { price: '0.04891000', qty: '0.00000000' }
   ],
   asks: [
-    { price: '0.04910600', quantity: '0.00000000' },
-    { price: '0.04910700', quantity: '11.24900000' }
+    { price: '0.04910600', qty: '0.00000000' },
+    { price: '0.04910700', qty: '11.24900000' }
   ]
 }
 ```
@@ -1076,7 +1089,7 @@ client.ws.ticker('HSRETH', ticker => {
   weightedAvg: '0.03394946',
   prevDayClose: '0.03623500',
   curDayClose: '0.03213800',
-  closeTradeQuantity: '7.02000000',
+  closeTradeqty: '7.02000000',
   bestBid: '0.03204200',
   bestBidQnt: '78.00000000',
   bestAsk: '0.03239800',
@@ -1162,7 +1175,7 @@ client.ws.trades(['BTCUSDT', 'ETHBTC'], trade => {
   symbol: 'ETHBTC',
   tradeId: 145470107,
   price: '0.02142700',
-  quantity: '0.06300000',
+  qty: '0.06300000',
   buyerOrderId: 498249081,
   sellerOrderId: 498249078,
   tradeTime: 1570196993151,
@@ -1175,7 +1188,7 @@ client.ws.trades(['BTCUSDT', 'ETHBTC'], trade => {
   symbol: 'BTCUSDT',
   tradeId: 186166622,
   price: '8138.30000000',
-  quantity: '0.01722700',
+  qty: '0.01722700',
   buyerOrderId: 684614964,
   sellerOrderId: 684614991,
   tradeTime: 1570196993372,
@@ -1209,7 +1222,7 @@ client.ws.aggTrades(['BTCUSDT', 'ETHBTC'], trade => {
   symbol: 'ETHBTC',
   aggId: 132178432,
   price: '0.02144000',
-  quantity: '0.42500000',
+  qty: '0.42500000',
   firstTradeId: 145470333,
   lastTradeId: 145470333,
   tradeTime: 1570197286254,
@@ -1222,7 +1235,7 @@ client.ws.aggTrades(['BTCUSDT', 'ETHBTC'], trade => {
   symbol: 'BTCUSDT',
   aggId: 168291934,
   price: '8160.04000000',
-  quantity: '0.40000000',
+  qty: '0.40000000',
   firstTradeId: 186167448,
   lastTradeId: 186167448,
   tradeTime: 1570197286693,

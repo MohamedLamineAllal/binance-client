@@ -176,25 +176,6 @@ const privateCall = ({ apiKey, apiSecret, base, apiPathBase, getTime = defaultGe
   })
 }
 
-const renameProps = (elements, mapping) => {
-  if (!Array.isArray(elements)) {
-    return renameObjProp(elements, mapping);
-  }
-
-  return elements.map(el => renameObjProp(el, mapping));
-}
-
-const renameObjProp = (el, mapping) => {
-  return Object.keys(el).reduce((newEl, prop) => {
-    if (mapping[prop]) {
-      newEl[mapping[prop]] = el[prop];
-    } else {
-      newEl[prop] = el[prop]
-    }
-    return newEl;
-  }, {});
-}
-
 export const candleFields = [
   'openTime',
   'open',
@@ -236,8 +217,8 @@ const order = (privCall, payload = {}, url, agent) => {
 const book = (pubCall, payload, agent) =>
   pubCall({ path: '/v1/depth', data: payload, agent }).then(({ lastUpdateId, asks, bids }) => ({
     lastUpdateId,
-    asks: asks.map(a => zip(['price', 'quantity'], a)),
-    bids: bids.map(b => zip(['price', 'quantity'], b)),
+    asks: asks.map(a => zip(['price', 'qty'], a)),
+    bids: bids.map(b => zip(['price', 'qty'], b)),
   }))
 
 const aggTrades = (pubCall, payload, agent) =>
@@ -245,7 +226,7 @@ const aggTrades = (pubCall, payload, agent) =>
     trades.map(trade => ({
       aggId: trade.a,
       price: trade.p,
-      quantity: trade.q,
+      qty: trade.q,
       firstTradeId: trade.f, // TODO: change the doc (And Exchange api)
       lastTradeId: trade.l,
       time: trade.T,
@@ -304,12 +285,8 @@ export default opts => {
     time: (agent) => pubCall({ path: '/v1/time', agent }).then(r => r.serverTime),
     exchangeInfo: (agent) => pubCall({ path: '/v3/exchangeInfo', agent }),
     book: (payload, agent) => checkParams('book', payload, ['symbol']) && book(pubCall, payload, agent),
-    trades: (payload, agent) => checkParams('trades', payload, ['symbol']) && pubCall({ path: '/v1/trades', data: payload,  agent }).then(
-      trades => renameProps(trades, { qty: 'quantity'})
-    ),
-    tradesHistory: (payload, agent) => checkParams('tradesHistory', payload, ['symbol']) && kCall({ path: '/v1/historicalTrades', data: payload, agent }).then(
-      trades => renameProps(trades, { qty: 'quantity'})
-    ),
+    trades: (payload, agent) => checkParams('trades', payload, ['symbol']) && pubCall({ path: '/v1/trades', data: payload,  agent }),
+    tradesHistory: (payload, agent) => checkParams('tradesHistory', payload, ['symbol']) && kCall({ path: '/v1/historicalTrades', data: payload, agent }),
     aggTrades: (payload, agent) => checkParams('aggTrades', payload, ['symbol']) && aggTrades(pubCall, payload, agent),
     candles: (payload, agent) => checkParams('candles', payload, ['symbol', 'interval']) &&  candles(pubCall, payload, agent),
     dailyStats: (payload, agent) => pubCall({ path: '/v1/ticker/24hr', data: payload, agent }),
@@ -353,12 +330,8 @@ export default opts => {
     futuresTime: (agent) => futuresPubCall({ path: '/v1/time', method: 'GET', agent }).then(r => r.serverTime),
     futuresExchangeInfo: (agent) => futuresPubCall({ path: '/v1/exchangeInfo', method: 'GET', agent }),
     futuresBook: (payload, agent) => checkParams('futuresBook', payload, ['symbol']) && futuresBook(futuresPubCall, payload, agent),
-    futuresTrades: (payload, agent) => checkParams('futuresTrades', payload, ['symbol']) && futuresPubCall({ path: '/v1/trades', method: 'GET', data: payload, agent }).then(
-      trades => renameProps(trades, { qty: 'quantity'})
-    ),
-    futuresTradesHistory: (payload, agent) => checkParams('futuresTradesHistory', payload, ['symbol']) && futuresKCall({ path: '/v1/historicalTrades', method: 'GET', data: payload, agent }).then(
-      trades => renameProps(trades, { qty: 'quantity'})
-    ),
+    futuresTrades: (payload, agent) => checkParams('futuresTrades', payload, ['symbol']) && futuresPubCall({ path: '/v1/trades', method: 'GET', data: payload, agent }),
+    futuresTradesHistory: (payload, agent) => checkParams('futuresTradesHistory', payload, ['symbol']) && futuresKCall({ path: '/v1/historicalTrades', method: 'GET', data: payload, agent }),
     futuresAggTrades: (payload, agent) => checkParams('futuresAggTrades', payload, ['symbol']) && futuresAggTrades(futuresPubCall, payload, agent),
     futuresCandles: (payload, agent) => checkParams('futuresCandles', payload, ['symbol', 'interval']) && futuresCandles(futuresPubCall, payload, agent),
     // ______________ futures exclusive
