@@ -719,11 +719,11 @@ declare module 'binance-client' {
     export interface NewOrder {
         icebergQty?: string;
         newClientOrderId?: string;
-        price?: string;
+        price?: number;
         quantity: number;
         recvWindow?: number;
         side: OrderSide;
-        stopPrice?: string;
+        stopPrice?: number;
         symbol: string;
         timeInForce?: TimeInForce;
         useServerTime?: boolean;
