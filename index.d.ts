@@ -1327,9 +1327,9 @@ declare module 'binance-client' {
         origQty: string;
         executedQty: string,
         cummulativeQuoteQty: string,
-        side: string,
+        side: 'BUY' | 'SELL',
         type: string,
-        status: string,
+        status: OrderStatus,
         timeInForce: string
     }
 
