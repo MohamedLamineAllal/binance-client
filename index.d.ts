@@ -1309,7 +1309,7 @@ declare module 'binance-client' {
         price: string;
         side: OrderSide;
         status: OrderStatus;
-        type: string;
+        type: OrderType;
         stopPrice: string;
         time: number;
         timeInForce: TimeInForce;
