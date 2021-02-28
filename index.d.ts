@@ -432,7 +432,7 @@ declare module 'binance-client' {
         futuresAllForceOrders: (payload: { symbol?: string, startTime?: number, endTime?: number, limit?: number, recvWindow?: number }, agent?: Agent) => Promise<FForceOrder | FForceOrder[]>;
         futuresOpenInterest: (payload: { symbol: string, recvWindow?: number }, agent?: Agent) => Promise<FOpenInterest>;
         futuresLeverageBracket: (payload: { symbol?: string, recvWindow?: number }, agent?: Agent) => Promise<FLeverageBrackets | FLeverageBrackets[] | FReducedLeverageBrackets>;
-        futuresAccountTransfer: (payload: { asset: string, amount: number, type: number, recvWindow?: number, recvWindow?: number }, agent?: Agent) => Promise<FAccountTransfer>;
+        futuresAccountTransfer: (payload: { asset: string, amount: number, type: number, recvWindow?: number }, agent?: Agent) => Promise<FAccountTransfer>;
         futuresAccountTransactionHistory: (payload: { asset: string, startTime: number, endTime?: number, current?: number, size?: number, recvWindow?: number }, agent?: Agent) => Promise<FAccountTransferHistory>;
         futuresOrder: (payload: FNewOrder & { recvWindow?: number }, agent?: Agent) => Promise<FOrder|HttpError>;
         futuresOrderTest: (payload: { symbol?: string, recvWindow?: number }, agent?: Agent) => Promise<FMarkPrice>;
@@ -892,10 +892,6 @@ declare module 'binance-client' {
         maxNational: string,
         positionSide: FPositionSide 
     }
-
-    export type FPositionSide = 'BOTH'
-        | 'LONG'
-        | 'SHORT';
 
     export interface FLeverageChangeResp {
         leverage: number,
