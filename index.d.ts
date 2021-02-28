@@ -687,7 +687,7 @@ declare module 'binance-client' {
         underlyingSubType: string[],
         settlePlan: number,
         triggerProtect: string,
-        orderType: FOrderType[],
+        orderTypes: FOrderType[],
         timeInForce: FTimeInForce[],
         filters: FSymbolFilter,
     }
