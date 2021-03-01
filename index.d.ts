@@ -460,7 +460,7 @@ declare module 'binance-client' {
     }
 
     export interface HttpError extends Error {
-        code: number | string;
+        code: number;
         message: string;
     }
 
@@ -829,7 +829,7 @@ declare module 'binance-client' {
     }
 
     interface FCancelAllOrderResp {
-        code: string,
+        code: number,
         msg: string
     }
 
@@ -900,7 +900,7 @@ declare module 'binance-client' {
     }
 
     export interface CodeMsgResp {
-        code: string,
+        code: number,
         msg: string
     }
 
