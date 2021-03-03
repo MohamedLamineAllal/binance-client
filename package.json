@@ -1,6 +1,6 @@
 {
   "name": "binance-client",
-  "version": "3.0.9",
+  "version": "3.0.10",
   "description": "A node API wrapper for Binance",
   "homepage": "https://github.com/MohamedLamineAllal/binance-client",
   "repository": "https://github.com/MohamedLamineAllal/binance-client.git",
