@@ -547,6 +547,7 @@ const userTransforms = {
         symbol: o.s,
         clientOrderId: o.c,
         side: o.S,
+        positionSide: o.ps,
         type: o.o,
         timeInForce: o.f,
         origQty: o.q,

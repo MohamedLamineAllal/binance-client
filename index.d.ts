@@ -350,20 +350,20 @@ declare module 'binance-client' {
     
     export interface FWSOrderUpdateOrder {
         symbol: string,
-        clientOrderId: string,
-        side: FOrderSide,
-        type: FOrderType
-        timeInForce: FTimeInForce,
-        origQty: string,
-        origPrice: string,
-        avgPrice: string,
-        stopPrice: string,
-        execType: FExecutionType,
-        status: FOrderStatus,
         orderId: number,
+        clientOrderId: string,
+        origQty: string,
         lastFilledQty: string,
         filledAccumulatedQty: string,
+        origPrice: string,
+        avgPrice: string,
         lastFilledPrice: string,
+        stopPrice: string,
+        side: FOrderSide,
+        positionSide: FPositionSide,
+        type: FOrderType,
+        execType: FExecutionType,
+        status: FOrderStatus,
         commissionAsset: string,
         commission: string,
         tradeTime: number,
@@ -373,6 +373,7 @@ declare module 'binance-client' {
         isMaker: boolean,
         isReduceOnly: boolean,
         stopPriceType: string // TODO: type
+        timeInForce: FTimeInForce,
     }
 
 
