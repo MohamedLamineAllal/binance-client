@@ -299,7 +299,7 @@ declare module 'binance-client' {
         positions: FWSUserMarginCallEventPosition[] 
     }
 
-    export type FSWUserAccountUpdateEventReasonType =
+    export type FWSUserAccountUpdateEventReasonType =
         | 'DEPOSIT'
         | 'WITHDRAW'
         | 'ORDER'
@@ -335,7 +335,7 @@ declare module 'binance-client' {
         eventTime: number,
         transactTime: number,
         updateData: {
-            eventReasonType: FSWUserAccountUpdateEventReasonType,
+            eventReasonType: FWSUserAccountUpdateEventReasonType,
             balances: FWSUserAccountUpdateBalance[],
             positions: FWSUserAccountUpdatePosition[]
         }
