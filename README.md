@@ -1,5 +1,10 @@
 # binance-client
 
+🥎🥎🥎🥎🥎  ❌❌❌ ❌❌❌ ❌❌❌ ❌❌❌ ❌❌❌ ❌❌❌    🥎🥎🥎🥎🥎
+ - This package is no more being maintained. Deprecated. ❗
+
+🥎🥎🥎🥎🥎  ❌❌❌ ❌❌❌ ❌❌❌ ❌❌❌ ❌❌❌ ❌❌❌    🥎🥎🥎🥎🥎
+
 > NOTICE: Proxy support was Added (check the last section in the doc)
 
 > NOTICE: BINANCE FUTURES support
@@ -119,9 +124,9 @@ Following examples will use the `await` form, which requires some configuration 
     - [Futures Websocket](#futures-websocket)
       - [Normal streams](#normal-streams)
         - [Event description and info](#event-description-and-info)
-          - [MARGIN_CALL](#margin_call)
-          - [ACCOUNT_UPDATE](#account_update)
-          - [ACCOUNT_ORDER_UPDATE](#account_order_update)
+          - [MARGIN\_CALL](#margin_call)
+          - [ACCOUNT\_UPDATE](#account_update)
+          - [ACCOUNT\_ORDER\_UPDATE](#account_order_update)
   - [Using proxy](#using-proxy)
 
 ### Public REST Endpoints
